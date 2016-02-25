@@ -1,6 +1,7 @@
 # pg_li3ds
 PostgreSQL extension for managing 3D sensor data
 
+## Context
 The goal of this project is to manage raw 3D sensor data: lidar pointclouds, trajectories and image metadata with a PostgreSQL database using PostGIS/pointcloud extensions within the context of heterogeneous remote sensing data acquisitions (satellite, aerial, UAV, Mobile mapping system, handheld...). 
 
 Three data types are to be used :
@@ -32,7 +33,7 @@ To be able to express the local point cloud in a fixed reference frame in the sr
 
 In the general case, we have a column of `traj` patches (with strictly increasing time values) and a column of `lidar` patches (with non-strictly increasing time values, due to multi-echo sensors). The matching of patches will be carried out using the patch min and max time values.
 
-### multi-echo lidar: Separating Pulse and Echo attributes
+### Multi-echo lidar: Separating Pulse and Echo attributes
 Some of the lidar attributes like `t,theta,phi,num_echoes` are shared among all the lidar *echo* samples that were backscattered from the same emitted lidar *pulse*, whereas other attributes like `range,echo,reflectance` are echo-level attributes. `echo` refer to the ordering of the echoes within a pulse composed of `num_echoes` echoes.
 Storing the local point cloud without separating these attributes into two table is both lossy and suboptimal:
 - lossy: we lose the pulse attributes of pulses that did not gather any echo
@@ -52,13 +53,13 @@ We envision 2 versions of `PC_Transform` that may be applied to :
 
 [related pgpointcloud fork](https://github.com/dustymugs/pgpointcloud_utils/tree/master/pgsql)
 
-### Miscellaneous functions
+## Miscellaneous functions
 
-## PC_PointN
+### PC_PointN
 and other PostGIS-like functions
 
-## PC_Get overloads
+### PC_Get overloads
 
-## PC_Join
+### PC_Join
 
 
