@@ -96,7 +96,6 @@ related pgpointcloud fork: https://github.com/dustymugs/pgpointcloud_utils/tree/
 Miscellaneous functions
 =======================
 
----------
 PC_PointN
 ---------
 
@@ -132,4 +131,13 @@ Install the pg_li3ds extension and load it into your database::
 Run tests
 =========
 
-see `tests/readme`
+see `tests/readme`_
+
+
+.. |unix_build| image:: https://img.shields.io/travis/LI3DS/pg_li3ds/master.svg?style=flat-square&label=unix%20build
+    :target: http://travis-ci.org/LI3DS/pg_li3ds
+    :alt: Build status of the master branch
+
+.. |license| image:: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
+    :target: https://raw.githubusercontent.com/LI3DS/pg_li3ds/master/LICENSE.txt
+    :alt: Package license
