@@ -1,0 +1,3 @@
+git+https://github.com/ldgeo/pyembedpg@master#egg=pyembedpg
+pytest
+tabulate

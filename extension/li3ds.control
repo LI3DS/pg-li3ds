@@ -1,0 +1,7 @@
+# li3ds extension
+comment = 'data model for large input 3d systems'
+default_version = '1.0.0'
+relocatable = false
+superuser = false
+schema = 'li3ds'
+requires = 'postgis, plpython3u, pointcloud, pointcloud_postgis'
