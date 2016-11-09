@@ -86,16 +86,11 @@ We envision 2 versions of ``PC_Transform`` that may be applied to :
 
 related pgpointcloud fork: https://github.com/dustymugs/pgpointcloud_utils/tree/master/pgsql
 
-.. _`LI3DS/pointcloud#15`: https://github.com/LI3DS/pointcloud/issues/15
-.. _`LI3DS/pointcloud#11`: https://github.com/LI3DS/pointcloud/issues/11
-.. _`LI3DS/pointcloud#10`: https://github.com/LI3DS/pointcloud/issues/10
-.. _`LI3DS/pointcloud#9`: https://github.com/LI3DS/pointcloud/issues/9
-.. _`LI3DS/pointcloud#5`: https://github.com/LI3DS/pointcloud/issues/5
-
 =======================
 Miscellaneous functions
 =======================
 
+---------
 PC_PointN
 ---------
 
@@ -133,6 +128,12 @@ Run tests
 
 see `tests/readme`_
 
+.. _`LI3DS/pointcloud#15`: https://github.com/LI3DS/pointcloud/issues/15
+.. _`LI3DS/pointcloud#11`: https://github.com/LI3DS/pointcloud/issues/11
+.. _`LI3DS/pointcloud#10`: https://github.com/LI3DS/pointcloud/issues/10
+.. _`LI3DS/pointcloud#9`: https://github.com/LI3DS/pointcloud/issues/9
+.. _`LI3DS/pointcloud#5`: https://github.com/LI3DS/pointcloud/issues/5
+.. _`tests/readme`: https://github.com/LI3DS/pg_li3ds/blob/master/tests/readme.rst
 
 .. |unix_build| image:: https://img.shields.io/travis/LI3DS/pg_li3ds/master.svg?style=flat-square&label=unix%20build
     :target: http://travis-ci.org/LI3DS/pg_li3ds

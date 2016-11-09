@@ -2,5 +2,8 @@ language: python
 python:
   - "3.4"
   - "3.5"
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y libproj-dev libgeos-dev
 install: "pip install -r tests/requirements.txt"
 script: py.test
