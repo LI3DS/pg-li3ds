@@ -101,10 +101,17 @@ Installation
 ============
 
 
+Install postgresql and plpython (The command and package name may have to be adapted for your system) :
+
+.. code-block:: bash
+
+    apt-get install postgresql-plpython3-9.3
+
 Create a yourdatabase and the required extensions
 
 .. code-block:: bash
 
+    createdb yourdatabase
     psql -d yourdatabase
 
 .. code-block:: sql
