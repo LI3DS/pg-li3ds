@@ -129,9 +129,9 @@ $$ language plpgsql;
 create table transfo(
     id serial primary key
     , description text
-    , tdate timestamptz
-    , validity_start timestamptz
-    , validity_end timestamptz
+    , tdate timestamptz default now()
+    , validity_start timestamptz default '-infinity'
+    , validity_end timestamptz default 'infinity'
     , parameters jsonb check (check_transfo_args(parameters, transfo_type))
     , source int references referential(id) not null
     , target int references referential(id) not null
