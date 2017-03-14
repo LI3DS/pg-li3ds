@@ -293,27 +293,6 @@ create table platform_config(
     )
 );
 
--- FIXME: function code de be reviewed by a senior dev :-(
-create or replace function sensor_root_ref_id(sensor_short_name varchar)
-returns integer as
-$$
-declare ref_id integer;
-begin
-    execute format('
-        SELECT r.id
-        FROM li3ds.referential AS r
-              JOIN
-              li3ds.sensor s ON s.id = r.sensor
-        WHERE s.short_name = %L', $1) into ref_id;
-    if ref_id is null then
-      RAISE EXCEPTION 'root referential related to % sensor not found', $1;
-    else
-      RETURN ref_id;
-    end if;
-end;
-$$ language plpgsql;
-
-
 /*
 Function that creates a project inside a specific schema.
 Returns the project id.
