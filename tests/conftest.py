@@ -119,7 +119,7 @@ def install_pointcloud(env):
     if not response.ok:
         raise PyEmbedPgException(
             'Cannot download file {url}. Error: {error}'
-            .format(url=POSTGIS_URL, error=response.content))
+            .format(url=POINTCLOUD_URL, error=response.content))
 
     with tempfile.NamedTemporaryFile() as fd:
         print('Downloading {url}'.format(url=POINTCLOUD_URL))
