@@ -18,7 +18,7 @@ POSTGIS_URL = (
     'http://download.osgeo.org/postgis/source/postgis-{}.tar.gz'
     .format(POSTGIS_VERSION))
 
-POINTCLOUD_VERSION = 'dev'  # dev branch of li3ds org
+POINTCLOUD_VERSION = 'master'  # dev branch of li3ds org
 POINTCLOUD_URL = (
     'https://github.com/LI3DS/pointcloud/archive/{}.tar.gz'
     .format(POINTCLOUD_VERSION))
