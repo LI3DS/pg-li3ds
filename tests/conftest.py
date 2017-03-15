@@ -18,7 +18,7 @@ POSTGIS_URL = (
     'http://download.osgeo.org/postgis/source/postgis-{}.tar.gz'
     .format(POSTGIS_VERSION))
 
-POINTCLOUD_VERSION = 'dev'  # dev branch of li3ds org
+POINTCLOUD_VERSION = 'master'  # dev branch of li3ds org
 POINTCLOUD_URL = (
     'https://github.com/LI3DS/pointcloud/archive/{}.tar.gz'
     .format(POINTCLOUD_VERSION))
@@ -119,7 +119,7 @@ def install_pointcloud(env):
     if not response.ok:
         raise PyEmbedPgException(
             'Cannot download file {url}. Error: {error}'
-            .format(url=POSTGIS_URL, error=response.content))
+            .format(url=POINTCLOUD_URL, error=response.content))
 
     with tempfile.NamedTemporaryFile() as fd:
         print('Downloading {url}'.format(url=POINTCLOUD_URL))
