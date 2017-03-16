@@ -59,6 +59,7 @@ create table referential(
     , root boolean
     , srid int
     , sensor int references sensor(id)
+    , constraint uniqreferential unique(name, sensor)
 );
 
 create table session(
