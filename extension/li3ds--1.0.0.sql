@@ -34,15 +34,15 @@ create type sensor_type as enum (
 
 create table platform(
     id serial primary key
-    , name varchar not null
+    , name varchar unique not null
     , description varchar
     , start_time timestamptz
     , end_time timestamptz
-    , constraint uniqplatform unique(name, description)
 );
 
 create table sensor(
     id serial primary key
+    , name varchar unique not null
     , serial_number varchar not null
     , short_name varchar -- FIXME brand_model_serial_number[:-3]
     , brand varchar
@@ -63,7 +63,7 @@ create table referential(
 
 create table session(
     id serial primary key
-    , name varchar not null
+    , name varchar unique not null
     , start_time timestamptz -- computed
     , end_time timestamptz -- computed
     , project int references project(id) on delete cascade not null
@@ -283,7 +283,7 @@ create table transfo_tree(
 
 create table platform_config(
     id serial primary key
-    , name varchar
+    , name varchar unique not null
     , owner varchar
     , platform integer references platform(id) not null
     , transfo_trees integer[]
