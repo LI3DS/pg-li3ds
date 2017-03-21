@@ -43,11 +43,11 @@ create table platform(
 create table sensor(
     id serial primary key
     , name varchar unique not null
+    , description varchar
     , serial_number varchar not null
     , short_name varchar -- FIXME brand_model_serial_number[:-3]
     , brand varchar
     , model varchar
-    , description varchar
     , type sensor_type not null
     , specifications jsonb
 );
