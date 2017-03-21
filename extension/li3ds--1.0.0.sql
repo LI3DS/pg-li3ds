@@ -274,6 +274,7 @@ $$ language plpgsql;
 create table transfo_tree(
     id serial primary key
     , name varchar not null
+    , description varchar
     , isdefault boolean
     , owner varchar
     , sensor_connections boolean default false
