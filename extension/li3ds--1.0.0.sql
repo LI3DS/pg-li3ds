@@ -109,7 +109,7 @@ create table posprocessing(
 
 create table transfo_type(
     id serial primary key
-    , func_name varchar
+    , name varchar unique not null
     , func_signature varchar[]
     , description varchar
 );
