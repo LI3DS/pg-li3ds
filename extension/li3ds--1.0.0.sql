@@ -45,7 +45,6 @@ create table sensor(
     , name varchar unique not null
     , description varchar
     , serial_number varchar not null
-    , short_name varchar -- FIXME brand_model_serial_number[:-3]
     , brand varchar
     , model varchar
     , type sensor_type not null
