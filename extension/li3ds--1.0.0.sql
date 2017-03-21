@@ -65,6 +65,7 @@ create table referential(
 create table session(
     id serial primary key
     , name varchar unique not null
+    , description varchar
     , start_time timestamptz -- computed
     , end_time timestamptz -- computed
     , project int references project(id) on delete cascade not null
@@ -285,6 +286,7 @@ create table transfo_tree(
 create table platform_config(
     id serial primary key
     , name varchar unique not null
+    , description varchar
     , owner varchar
     , platform integer references platform(id) not null
     , transfo_trees integer[]
