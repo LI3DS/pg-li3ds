@@ -130,6 +130,7 @@ $$ language plpgsql;
 
 create table transfo(
     id serial primary key
+    , name varchar not null
     , description varchar
     , tdate timestamptz default now()
     , validity_start timestamptz default '-infinity'
