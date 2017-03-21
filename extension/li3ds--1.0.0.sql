@@ -34,36 +34,37 @@ create type sensor_type as enum (
 
 create table platform(
     id serial primary key
-    , name varchar not null
+    , name varchar unique not null
     , description varchar
     , start_time timestamptz
     , end_time timestamptz
-    , constraint uniqplatform unique(name, description)
 );
 
 create table sensor(
     id serial primary key
+    , name varchar unique not null
+    , description varchar
     , serial_number varchar not null
-    , short_name varchar -- FIXME brand_model_serial_number[:-3]
     , brand varchar
     , model varchar
-    , description text
     , type sensor_type not null
     , specifications jsonb
 );
 
 create table referential(
     id serial primary key
-    , name text
-    , description text
+    , name varchar not null
+    , description varchar
     , root boolean
     , srid int
     , sensor int references sensor(id)
+    , constraint uniqreferential unique(name, sensor)
 );
 
 create table session(
     id serial primary key
-    , name varchar not null
+    , name varchar unique not null
+    , description varchar
     , start_time timestamptz -- computed
     , end_time timestamptz -- computed
     , project int references project(id) on delete cascade not null
@@ -81,7 +82,7 @@ create table datasource(
 create table processing(
     id serial primary key
     , launched timestamptz
-    , description text
+    , description varchar
     , tool varchar
     , source int references datasource(id) on delete cascade not null
     , target int references datasource(id) on delete cascade not null
@@ -99,7 +100,7 @@ create table posdatasource(
 create table posprocessing(
     id serial primary key
     , launched timestamptz
-    , description text
+    , description varchar
     , tool varchar
     , source int references posdatasource(id) on delete cascade not null
     , target int references posdatasource(id) on delete cascade not null
@@ -107,9 +108,9 @@ create table posprocessing(
 
 create table transfo_type(
     id serial primary key
-    , func_name varchar
+    , name varchar unique not null
     , func_signature varchar[]
-    , description text
+    , description varchar
 );
 
 -- add constraint on transformation insertion
@@ -128,7 +129,8 @@ $$ language plpgsql;
 
 create table transfo(
     id serial primary key
-    , description text
+    , name varchar not null
+    , description varchar
     , tdate timestamptz default now()
     , validity_start timestamptz default '-infinity'
     , validity_end timestamptz default 'infinity'
@@ -270,7 +272,8 @@ $$ language plpgsql;
 
 create table transfo_tree(
     id serial primary key
-    , name varchar
+    , name varchar not null
+    , description varchar
     , isdefault boolean
     , owner varchar
     , sensor_connections boolean default false
@@ -283,7 +286,8 @@ create table transfo_tree(
 
 create table platform_config(
     id serial primary key
-    , name varchar
+    , name varchar unique not null
+    , description varchar
     , owner varchar
     , platform integer references platform(id) not null
     , transfo_trees integer[]

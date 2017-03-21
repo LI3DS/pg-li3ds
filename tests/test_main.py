@@ -55,28 +55,31 @@ def db(postgres):
 
 
 transfos_sample = '''
-    insert into referential (id) values (1), (2), (3), (4), (5);
-    insert into transfo (id, source, target)
-    values (1, 1, 2), (2, 2, 3), (3, 2, 4), (4, 5, 2);
+    insert into referential (id, name)
+    values (1, 'r1'), (2, 'r2'), (3, 'r3'), (4, 'r4'), (5, 'r5');
+    insert into transfo (id, name, source, target)
+    values (1, 't1', 1, 2), (2, 't2', 2, 3), (3, 't3', 2, 4), (4, 't4', 5, 2);
 '''
 
 
 add_sensor_group = '''
-    insert into referential (id) values (6), (7), (8), (9);
-    insert into transfo (id, source, target)
-    values (5, 5, 6), (6, 6, 7), (7, 6, 8), (8, 6, 9);
+    insert into referential (id, name)
+    values (6, 'r6'), (7, 'r7'), (8, 'r8'), (9, 'r9');
+    insert into transfo (id, name, source, target)
+    values (5, 't5', 5, 6), (6, 't6', 6, 7), (7, 't7', 6, 8), (8, 't8', 6, 9);
 '''
 
 add_transfo_trees = '''
     insert into platform (id, name) values (1, 'platform');
-    insert into transfo_tree(id, transfos) values (1, ARRAY[1, 2, 3, 4]);
-    insert into transfo_tree(id, transfos) values (2, ARRAY[6, 7, 8]);
-    insert into transfo_tree(id, sensor_connections, transfos) values (3, true, ARRAY[5]);
+    insert into transfo_tree(id, name, transfos) values (1, 't1', ARRAY[1, 2, 3, 4]);
+    insert into transfo_tree(id, name, transfos) values (2, 't2', ARRAY[6, 7, 8]);
+    insert into transfo_tree(id, name, sensor_connections, transfos)
+    values (3, 't3', true, ARRAY[5]);
 '''
 
 add_platform_config = '''
-    insert into platform_config (id, platform, transfo_trees)
-    values (1, 1, ARRAY[1, 2, 3])
+    insert into platform_config (id, name, platform, transfo_trees)
+    values (1, 'p1', 1, ARRAY[1, 2, 3])
 '''
 
 
@@ -141,9 +144,9 @@ def test_delete_project_cascading(db):
     db.execute("""
         insert into platform (id, name) values (1, 'platform');
         insert into session(id, name, project, platform) values (1, 'session', {}, 1);
-        insert into referential (id) values (1);
+        insert into referential (id, name) values (1, 'r1');
         insert into datasource (id, session, referential) values (1, 1, 1);
-        insert into sensor (id, serial_number, type) values (1, '', 'ins');
+        insert into sensor (id, name, serial_number, type) values (1, 's1', '', 'ins');
         insert into posdatasource (id, session, sensor) values (1, 1, 1);
     """.format(pid))
     db.execute("select delete_project('paris')")
@@ -162,20 +165,25 @@ def test_check_transfo_exists_constraint_ko(db):
     db.execute(transfos_sample)
     # check through constraint
     with pytest.raises(psycopg2.IntegrityError):
-        db.execute("insert into transfo_tree(transfos) values (ARRAY[1, 7])")
+        db.execute('''
+            insert into transfo_tree(name, transfos)
+            values ('t1', ARRAY[1, 7])
+        ''')
 
 
 def test_check_transfo_exists_constraint_ok(db):
     db.execute(transfos_sample)
-    assert db.rowcount("insert into transfo_tree(transfos) values (ARRAY[1, 2, 4])") == 1
+    assert db.rowcount('''
+        insert into transfo_tree(name, transfos)
+        values ('t1', ARRAY[1, 2, 4])''') == 1
 
 
 def test_transfo_tree_sensor_connection_ok(db):
     db.execute(transfos_sample)
     db.execute(add_sensor_group)
     assert db.rowcount('''
-        insert into transfo_tree (id, sensor_connections, transfos)
-        values (1, true, ARRAY[5])''') == 1
+        insert into transfo_tree (id, name, sensor_connections, transfos)
+        values (1, 't1', true, ARRAY[5])''') == 1
 
 
 def test_transfo_tree_sensor_connection_ko(db):
@@ -184,8 +192,8 @@ def test_transfo_tree_sensor_connection_ko(db):
     db.execute(add_sensor_group)
     with pytest.raises(psycopg2.IntegrityError):
         db.execute('''
-        insert into transfo_tree (id, sensor_connections, transfos)
-        values (1, false, ARRAY[1, 5])''') == 1
+        insert into transfo_tree (id, name, sensor_connections, transfos)
+        values (1, 't1', false, ARRAY[1, 5])''') == 1
 
 
 def test_foreign_key_array_ok(db):
@@ -212,15 +220,20 @@ def test_check_istree_ok(db):
 def test_check_istree_ko_cycle(db):
     db.execute(transfos_sample)
     # insert transfo to make a cycle
-    db.execute("insert into transfo (id, source, target) values (5, 4, 5)")
+    db.execute('''
+        insert into transfo (id, name, source, target)
+        values (5, 't5', 4, 5)
+    ''')
     assert not db.query("select check_istree(ARRAY[1, 2, 3, 4, 5])")[0][0]
 
 
 def test_check_istree_ko_noconnex(db):
     db.execute(transfos_sample)
     # insert an isolated graph
-    db.execute("insert into referential (id) values (6), (7)")
-    db.execute("insert into transfo (id, source, target) values (6, 6, 7)")
+    db.execute("insert into referential (id, name) values (6, 'r6'), (7, 'r7')")
+    db.execute('''
+        insert into transfo (id, name, source, target)
+        values (6, 't6', 6, 7)''')
     assert not db.query("select check_istree(ARRAY[1, 2, 3, 4, 6])")[0][0]
 
 
@@ -237,8 +250,8 @@ def test_platform_config_ko(db):
     db.execute(add_transfo_trees)
     with pytest.raises(psycopg2.IntegrityError):
         db.execute('''
-            insert into platform_config (id, platform, transfo_trees)
-            values (1, 1, ARRAY[1, 2])
+            insert into platform_config (id, name, platform, transfo_trees)
+            values (1, 'p1', 1, ARRAY[1, 2])
         ''')
 
 
@@ -248,8 +261,8 @@ def test_platform_config_ko2(db):
     db.execute(add_transfo_trees)
     with pytest.raises(psycopg2.IntegrityError):
         db.execute('''
-            insert into platform_config (id, platform, transfo_trees)
-            values (1, 1, ARRAY[1, 2, 8])
+            insert into platform_config (id, name, platform, transfo_trees)
+            values (1, 'p1', 1, ARRAY[1, 2, 8])
         ''')
 
 
