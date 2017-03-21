@@ -47,15 +47,15 @@ create table sensor(
     , short_name varchar -- FIXME brand_model_serial_number[:-3]
     , brand varchar
     , model varchar
-    , description text
+    , description varchar
     , type sensor_type not null
     , specifications jsonb
 );
 
 create table referential(
     id serial primary key
-    , name text
-    , description text
+    , name varchar
+    , description varchar
     , root boolean
     , srid int
     , sensor int references sensor(id)
@@ -81,7 +81,7 @@ create table datasource(
 create table processing(
     id serial primary key
     , launched timestamptz
-    , description text
+    , description varchar
     , tool varchar
     , source int references datasource(id) on delete cascade not null
     , target int references datasource(id) on delete cascade not null
@@ -99,7 +99,7 @@ create table posdatasource(
 create table posprocessing(
     id serial primary key
     , launched timestamptz
-    , description text
+    , description varchar
     , tool varchar
     , source int references posdatasource(id) on delete cascade not null
     , target int references posdatasource(id) on delete cascade not null
@@ -109,7 +109,7 @@ create table transfo_type(
     id serial primary key
     , func_name varchar
     , func_signature varchar[]
-    , description text
+    , description varchar
 );
 
 -- add constraint on transformation insertion
@@ -128,7 +128,7 @@ $$ language plpgsql;
 
 create table transfo(
     id serial primary key
-    , description text
+    , description varchar
     , tdate timestamptz default now()
     , validity_start timestamptz default '-infinity'
     , validity_end timestamptz default 'infinity'
