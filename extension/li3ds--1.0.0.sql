@@ -55,7 +55,6 @@ create table referential(
     id serial primary key
     , name varchar not null
     , description varchar
-    , root boolean
     , srid int
     , sensor int references sensor(id)
     , constraint uniqreferential unique(name, sensor)
