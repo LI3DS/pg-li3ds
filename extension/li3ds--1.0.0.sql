@@ -88,24 +88,6 @@ create table processing(
     , target int references datasource(id) on delete cascade not null
 );
 
-create table posdatasource(
-    id serial primary key
-    , uri varchar
-    , version int
-    , session int references session(id) on delete cascade not null
-    , sensor int references sensor(id) on delete cascade not null
-    , constraint uniqposdatasource unique(uri, version, session, sensor)
-);
-
-create table posprocessing(
-    id serial primary key
-    , launched timestamptz
-    , description varchar
-    , tool varchar
-    , source int references posdatasource(id) on delete cascade not null
-    , target int references posdatasource(id) on delete cascade not null
-);
-
 create table transfo_type(
     id serial primary key
     , name varchar unique not null
