@@ -96,8 +96,6 @@ def test_table_list(db):
     assert db.hastable('li3ds', 'referential')
     assert db.hastable('li3ds', 'datasource')
     assert db.hastable('li3ds', 'processing')
-    assert db.hastable('li3ds', 'posdatasource')
-    assert db.hastable('li3ds', 'posprocessing')
     assert db.hastable('li3ds', 'transfo')
     assert db.hastable('li3ds', 'transfo_type')
     assert db.hastable('li3ds', 'transfo_tree')
@@ -137,8 +135,8 @@ def test_delete_project(db):
 
 def test_delete_project_cascading(db):
     '''
-    Deleting a project should delete all related sessions,
-    datasource and posdatasource but not platform related objects
+    Deleting a project should delete all related sessions and
+    datasources but not platform related objects
     '''
     pid = db.query("select create_project('paris', 'Europe/Paris')")[0][0]
     db.execute("""
@@ -147,12 +145,10 @@ def test_delete_project_cascading(db):
         insert into referential (id, name) values (1, 'r1');
         insert into datasource (id, session, referential) values (1, 1, 1);
         insert into sensor (id, name, serial_number, type) values (1, 's1', '', 'ins');
-        insert into posdatasource (id, session, sensor) values (1, 1, 1);
     """.format(pid))
     db.execute("select delete_project('paris')")
     assert db.rowcount("select * from session") == 0
     assert db.rowcount("select * from datasource") == 0
-    assert db.rowcount("select * from posdatasource") == 0
     assert db.rowcount("select * from platform") == 1
     assert db.rowcount("select * from referential") == 1
     assert db.rowcount("select * from sensor") == 1
