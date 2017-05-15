@@ -300,18 +300,21 @@ begin
           , exif jsonb
           , etime timestamptz
           , datasource bigint references li3ds.datasource(id) on delete cascade
+          , constraint uniqimageuri unique(uri, datasource)
         );', $1);
 
     execute format('create table %I.route(
           id bigserial primary key
           , uri varchar
           , datasource bigint references li3ds.datasource(id) on delete cascade
+          , constraint uniqrouteuri unique(uri, datasource)
       );', $1);
 
     execute format('create table %I.lidar(
           id bigserial primary key
           , uri varchar
           , datasource bigint references li3ds.datasource(id) on delete cascade
+          , constraint uniqlidaruri unique(uri, datasource)
       );', $1);
 
     RETURN proj_id;
