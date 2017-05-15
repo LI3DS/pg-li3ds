@@ -103,13 +103,17 @@ def test_table_list(db):
 
 def test_create_project(db):
     '''
-    When create_project is invoked, a new schema must be created in addition to
-    a new table and an entry in project table
+    When create_project is called the following should be created:
+    - a new schema
+    - "image", "route" and "lidar" tables
+    - a new record in the li3ds.project table
     '''
-    db.execute("select create_project('paris', 'Europe/Paris')")
-    assert db.hasschema("paris")
-    assert db.query("select name from project") == [('paris',)]
-    assert db.hastable('paris', "image")
+    db.execute("select create_project('Paris', 'Europe/Paris')")
+    assert db.hasschema("Paris")
+    assert db.query("select name from project") == [('Paris',)]
+    assert db.hastable('Paris', 'image')
+    assert db.hastable('Paris', 'route')
+    assert db.hastable('Paris', 'lidar')
 
 
 def test_create_project_dup(db):
