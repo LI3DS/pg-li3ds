@@ -302,6 +302,18 @@ begin
           , datasource bigint references li3ds.datasource(id) on delete cascade
         );', $1);
 
+    execute format('create table %I.route(
+          id bigserial primary key
+          , uri varchar
+          , datasource bigint references li3ds.datasource(id) on delete cascade
+      );', $1);
+
+    execute format('create table %I.lidar(
+          id bigserial primary key
+          , uri varchar
+          , datasource bigint references li3ds.datasource(id) on delete cascade
+      );', $1);
+
     RETURN proj_id;
 END;
 $$ language plpgsql;
