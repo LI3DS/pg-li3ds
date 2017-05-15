@@ -296,7 +296,7 @@ begin
 
     execute format('create table %I.image(
           id bigserial primary key
-          , filename varchar
+          , uri varchar
           , exif jsonb
           , etime timestamptz
           , datasource bigint references li3ds.datasource(id) on delete cascade
