@@ -292,7 +292,7 @@ begin
 	    values (%L, %L, %L::geometry) returning id', $1, $2, $3)
         into proj_id;
 
-    execute format('create schema %I', lower($1));
+    execute format('create schema %I', $1);
 
     execute format('create table %I.image(
           id bigserial primary key
@@ -300,7 +300,7 @@ begin
           , exif jsonb
           , etime timestamptz
           , datasource bigint references li3ds.datasource(id) on delete cascade
-        );', lower($1));
+        );', $1);
 
     RETURN proj_id;
 END;
