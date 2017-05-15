@@ -101,59 +101,6 @@ def test_table_list(db):
     assert db.hastable('li3ds', 'transfo_tree')
 
 
-def test_create_project(db):
-    '''
-    When create_project is invoked, a new schema must be created in addition to
-    a new table and an entry in project table
-    '''
-    db.execute("select create_project('paris', 'Europe/Paris')")
-    assert db.hasschema("paris")
-    assert db.query("select name from project") == [('paris',)]
-    assert db.hastable('paris', "image")
-
-
-def test_create_project_dup(db):
-    db.execute("select create_project('paris', 'Europe/Paris')")
-    with pytest.raises(psycopg2.IntegrityError):
-        db.execute("select create_project('paris', 'Europe/Paris')")
-
-
-def test_create_project_extent_badsrid(db):
-    with pytest.raises(psycopg2.DataError):
-        db.execute('''
-            select create_project(
-            'paris',
-            'Europe/Paris',
-            'srid=4325;polygon((1 1, 2 2, 3 3, 1 1))'
-        )''')
-
-
-def test_delete_project(db):
-    db.execute("select delete_project('paris')")
-    assert not db.hasschema("paris")
-
-
-def test_delete_project_cascading(db):
-    '''
-    Deleting a project should delete all related sessions and
-    datasources but not platform related objects
-    '''
-    pid = db.query("select create_project('paris', 'Europe/Paris')")[0][0]
-    db.execute("""
-        insert into platform (id, name) values (1, 'platform');
-        insert into session(id, name, project, platform) values (1, 'session', {}, 1);
-        insert into referential (id, name) values (1, 'r1');
-        insert into datasource (id, session, referential) values (1, 1, 1);
-        insert into sensor (id, name, serial_number, type) values (1, 's1', '', 'ins');
-    """.format(pid))
-    db.execute("select delete_project('paris')")
-    assert db.rowcount("select * from session") == 0
-    assert db.rowcount("select * from datasource") == 0
-    assert db.rowcount("select * from platform") == 1
-    assert db.rowcount("select * from referential") == 1
-    assert db.rowcount("select * from sensor") == 1
-
-
 def test_check_transfo_exists_constraint_ko(db):
     '''
     Insertion should fail if transformation does not exist
