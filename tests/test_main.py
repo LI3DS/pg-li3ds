@@ -95,67 +95,13 @@ def test_table_list(db):
     assert db.hastable('li3ds', 'sensor')
     assert db.hastable('li3ds', 'referential')
     assert db.hastable('li3ds', 'datasource')
+    assert db.hastable('li3ds', 'image')
+    assert db.hastable('li3ds', 'route')
+    assert db.hastable('li3ds', 'lidar')
     assert db.hastable('li3ds', 'processing')
     assert db.hastable('li3ds', 'transfo')
     assert db.hastable('li3ds', 'transfo_type')
     assert db.hastable('li3ds', 'transfo_tree')
-
-
-def test_create_project(db):
-    '''
-    When create_project is called the following should be created:
-    - a new schema
-    - "image", "route" and "lidar" tables
-    - a new record in the li3ds.project table
-    '''
-    db.execute("select create_project('Paris', 'Europe/Paris')")
-    assert db.hasschema("Paris")
-    assert db.query("select name from project") == [('Paris',)]
-    assert db.hastable('Paris', 'image')
-    assert db.hastable('Paris', 'route')
-    assert db.hastable('Paris', 'lidar')
-
-
-def test_create_project_dup(db):
-    db.execute("select create_project('paris', 'Europe/Paris')")
-    with pytest.raises(psycopg2.IntegrityError):
-        db.execute("select create_project('paris', 'Europe/Paris')")
-
-
-def test_create_project_extent_badsrid(db):
-    with pytest.raises(psycopg2.DataError):
-        db.execute('''
-            select create_project(
-            'paris',
-            'Europe/Paris',
-            'srid=4325;polygon((1 1, 2 2, 3 3, 1 1))'
-        )''')
-
-
-def test_delete_project(db):
-    db.execute("select delete_project('paris')")
-    assert not db.hasschema("paris")
-
-
-def test_delete_project_cascading(db):
-    '''
-    Deleting a project should delete all related sessions and
-    datasources but not platform related objects
-    '''
-    pid = db.query("select create_project('paris', 'Europe/Paris')")[0][0]
-    db.execute("""
-        insert into platform (id, name) values (1, 'platform');
-        insert into session(id, name, project, platform) values (1, 'session', {}, 1);
-        insert into referential (id, name) values (1, 'r1');
-        insert into datasource (id, session, referential) values (1, 1, 1);
-        insert into sensor (id, name, serial_number, type) values (1, 's1', '', 'ins');
-    """.format(pid))
-    db.execute("select delete_project('paris')")
-    assert db.rowcount("select * from session") == 0
-    assert db.rowcount("select * from datasource") == 0
-    assert db.rowcount("select * from platform") == 1
-    assert db.rowcount("select * from referential") == 1
-    assert db.rowcount("select * from sensor") == 1
 
 
 def test_check_transfo_exists_constraint_ko(db):

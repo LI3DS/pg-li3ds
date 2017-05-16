@@ -78,6 +78,30 @@ create table datasource(
     , constraint uniqdatasource unique(uri, session, referential)
 );
 
+
+create table image(
+    id bigserial primary key
+    , uri varchar
+    , exif jsonb
+    , etime timestamptz
+    , datasource bigint references li3ds.datasource(id) on delete cascade
+    , constraint uniqimageuri unique(uri, datasource)
+);
+
+create table route(
+    id bigserial primary key
+    , uri varchar
+    , datasource bigint references li3ds.datasource(id) on delete cascade
+    , constraint uniqrouteuri unique(uri, datasource)
+);
+
+create table lidar(
+    id bigserial primary key
+    , uri varchar
+    , datasource bigint references li3ds.datasource(id) on delete cascade
+    , constraint uniqlidaruri unique(uri, datasource)
+);
+
 create table processing(
     id serial primary key
     , launched timestamptz
@@ -276,64 +300,6 @@ create table platform_config(
         and check_transfotree_istree(transfo_trees)
     )
 );
-
-/*
-Function that creates a project inside a specific schema.
-Returns the project id.
-*/
-create or replace function create_project(project_name varchar, timezone varchar DEFAULT 'Europe/Paris', extent varchar DEFAULT NULL)
-returns integer as
-$$
-declare proj_id int;
-begin
-
-    execute format('
-        insert into li3ds.project (name, timezone, extent)
-	    values (%L, %L, %L::geometry) returning id', $1, $2, $3)
-        into proj_id;
-
-    execute format('create schema %I', $1);
-
-    execute format('create table %I.image(
-          id bigserial primary key
-          , uri varchar
-          , exif jsonb
-          , etime timestamptz
-          , datasource bigint references li3ds.datasource(id) on delete cascade
-          , constraint uniqimageuri unique(uri, datasource)
-        );', $1);
-
-    execute format('create table %I.route(
-          id bigserial primary key
-          , uri varchar
-          , datasource bigint references li3ds.datasource(id) on delete cascade
-          , constraint uniqrouteuri unique(uri, datasource)
-      );', $1);
-
-    execute format('create table %I.lidar(
-          id bigserial primary key
-          , uri varchar
-          , datasource bigint references li3ds.datasource(id) on delete cascade
-          , constraint uniqlidaruri unique(uri, datasource)
-      );', $1);
-
-    RETURN proj_id;
-END;
-$$ language plpgsql;
-
-/*
-Delete dataset schema
-*/
-create or replace function delete_project(project_name varchar)
-returns void as
-$$
-begin
-    execute format('delete from li3ds.project where name = %L', $1);
-    execute format('drop schema if exists %I cascade', lower($1));
-    RETURN;
-END;
-$$ language plpgsql;
-
 
 create or replace function dijkstra(platform_config_id integer,
     source integer, target integer)
