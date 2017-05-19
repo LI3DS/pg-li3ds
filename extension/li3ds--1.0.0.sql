@@ -120,6 +120,28 @@ returns boolean as $$
     end;
 $$ language plpgsql;
 
+create or replace function check_pcpatch_column(schema_table_column varchar)
+returns boolean as $$
+    declare
+      schema_table_column_array text[];
+    begin
+        if schema_table_column is null then
+            return true;
+        end if;
+        schema_table_column_array := regexp_split_to_array(schema_table_column, E'\\.');
+        if array_length(schema_table_column_array, 1) <> 3 then
+            return false;
+        end if;
+        return exists(
+            select 1 from information_schema.columns where
+                table_schema=schema_table_column_array[1] and
+                table_name=schema_table_column_array[2] and
+                column_name=schema_table_column_array[3] and
+                udt_name='pcpatch'
+        );
+    end;
+$$ language plpgsql;
+
 create table transfo(
     id serial primary key
     , name varchar not null
@@ -128,6 +150,7 @@ create table transfo(
     , validity_start timestamptz default '-infinity'
     , validity_end timestamptz default 'infinity'
     , parameters jsonb check (check_transfo_args(parameters, transfo_type))
+    , parameters_column varchar check (check_pcpatch_column(parameters_column))
     , source int references referential(id) not null
     , target int references referential(id) not null
     , transfo_type int references transfo_type(id)
