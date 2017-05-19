@@ -32,6 +32,12 @@ create type sensor_type as enum (
     'odometer'
 );
 
+create type datasource_type as enum (
+    'image',
+    'route',
+    'lidar'
+);
+
 create table platform(
     id serial primary key
     , name varchar unique not null
@@ -72,7 +78,13 @@ create table session(
 
 create table datasource(
     id serial primary key
-    , uri varchar
+    -- possible uri schemes are "file" and "column"
+    , uri varchar not null constraint uri_scheme check (split_part(uri, ':', 1) = any ('{file, column}'::text[]))
+    , type datasource_type not null
+    , parameters jsonb
+    , bounds double precision[6]  -- [xmin, ymin, zmin, xmax, ymax, zmax]
+    , capture_start timestamptz
+    , capture_end timestamptz
     , session int references session(id) on delete cascade not null
     , referential int references referential(id) on delete cascade not null
     , constraint uniqdatasource unique(uri, session, referential)
@@ -276,49 +288,6 @@ create table platform_config(
         and check_transfotree_istree(transfo_trees)
     )
 );
-
-/*
-Function that creates a project inside a specific schema.
-Returns the project id.
-*/
-create or replace function create_project(project_name varchar, timezone varchar DEFAULT 'Europe/Paris', extent varchar DEFAULT NULL)
-returns integer as
-$$
-declare proj_id int;
-begin
-
-    execute format('
-        insert into li3ds.project (name, timezone, extent)
-	    values (%L, %L, %L::geometry) returning id', $1, $2, $3)
-        into proj_id;
-
-    execute format('create schema %I', lower($1));
-
-    execute format('create table %I.image(
-          id bigserial primary key
-          , filename varchar
-          , exif jsonb
-          , etime timestamptz
-          , datasource bigint references li3ds.datasource(id) on delete cascade
-        );', lower($1));
-
-    RETURN proj_id;
-END;
-$$ language plpgsql;
-
-/*
-Delete dataset schema
-*/
-create or replace function delete_project(project_name varchar)
-returns void as
-$$
-begin
-    execute format('delete from li3ds.project where name = %L', $1);
-    execute format('drop schema if exists %I cascade', lower($1));
-    RETURN;
-END;
-$$ language plpgsql;
-
 
 create or replace function dijkstra(platform_config_id integer,
     source integer, target integer)
