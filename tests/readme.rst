@@ -3,6 +3,8 @@ Testing
 
 We use pytest for testing in addition to a temporary PostgreSQL database thanks to pyembedpg
 
+Dependencies: check that gcc and readline (e.g., libreadline-dev on Debian, readline on MacOS) are installed.
+
 Start a dedicated Python virtualenv, and install dependencies::
 
     pip install -r requirements.txt
