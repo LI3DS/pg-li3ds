@@ -9,6 +9,6 @@ python:
   - "3.5"
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y libproj-dev libgeos-dev libgdal-dev xsltproc
+  - sudo apt-get install -y libproj-dev libgeos-dev libgdal-dev xsltproc imagemagick
 install: "pip install -r tests/requirements.txt"
 script: py.test -s -v
