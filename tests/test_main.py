@@ -64,7 +64,7 @@ transfos_sample = '''
 
 add_sensor_group = '''
     insert into sensor(id, name, serial_number, type)
-    values (1, 'mysensor', 'XKB', 'image');
+    values (1, 'mysensor', 'XKB', 'camera');
     insert into referential (id, name)
     values (6, 'r6'), (7, 'r7'), (8, 'r8'), (9, 'r9');
     insert into transfo (id, name, source, target)
