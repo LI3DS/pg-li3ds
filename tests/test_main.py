@@ -75,8 +75,8 @@ add_transfo_trees = '''
     insert into platform (id, name) values (1, 'platform');
     insert into transfo_tree(id, name, transfos) values (1, 't1', ARRAY[1, 2, 3, 4]);
     insert into transfo_tree(id, name, transfos) values (2, 't2', ARRAY[6, 7, 8]);
-    insert into transfo_tree(id, name, sensor_connections, transfos)
-    values (3, 't3', true, ARRAY[5]);
+    insert into transfo_tree(id, name, sensor, transfos)
+    values (3, 't3', NULL, ARRAY[5]);
 '''
 
 add_platform_config = '''
@@ -123,22 +123,22 @@ def test_check_transfo_exists_constraint_ok(db):
         values ('t1', ARRAY[1, 2, 4])''') == 1
 
 
-def test_transfo_tree_sensor_connection_ok(db):
+def test_transfo_tree_nosensor_ok(db):
     db.execute(transfos_sample)
     db.execute(add_sensor_group)
     assert db.rowcount('''
         insert into transfo_tree (id, name, sensor, transfos)
-        values (1, 't1', 1, ARRAY[5])''') == 1
+        values (1, 't1', NULL, ARRAY[5])''') == 1
 
 
-def test_transfo_tree_sensor_connection_ko(db):
-    '''should fail if it's not a sensor_connection and transfos are not connected'''
+def test_transfo_tree_sensor_ko(db):
+    '''should fail if it references a sensor and transfos are not connected'''
     db.execute(transfos_sample)
     db.execute(add_sensor_group)
     with pytest.raises(psycopg2.IntegrityError):
         db.execute('''
         insert into transfo_tree (id, name, sensor, transfos)
-        values (1, 't1', NULL, ARRAY[1, 5])''') == 1
+        values (1, 't1', 1, ARRAY[1, 5])''') == 1
 
 
 def test_foreign_key_array_ok(db):
