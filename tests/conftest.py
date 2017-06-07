@@ -27,11 +27,7 @@ EXTENSION_DIR = str((Path(__file__).parent.parent).resolve())
 
 
 @pytest.fixture(scope="session")
-def postgres(request):
-    def endup():
-        print("Database shutdown")
-        pg.shutdown()
-    request.addfinalizer(endup)
+def postgres():
 
     pg = PyEmbedPg(POSTGRES_VERSION, config_options='--with-python').start(15432)
     pg.create_database('testdb')
@@ -49,7 +45,10 @@ def postgres(request):
 
     load_extensions(pg)
 
-    return pg
+    yield pg
+
+    print("Database shutdown")
+    pg.shutdown()
 
 
 def load_extensions(pg):
