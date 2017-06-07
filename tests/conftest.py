@@ -13,7 +13,7 @@ from pyembedpg import PyEmbedPg, PyEmbedPgException
 
 
 POSTGRES_VERSION = '9.6.3'
-POSTGIS_VERSION = 'svn-trunk'
+POSTGIS_VERSION = 'ff0a844e606622f45841fc25221bbaa136ed1001'  # 2017/05/31
 POSTGIS_URL = (
     'https://github.com/postgis/postgis/archive/{}.tar.gz'
     .format(POSTGIS_VERSION))
