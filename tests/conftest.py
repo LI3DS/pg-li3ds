@@ -12,10 +12,10 @@ from tabulate import tabulate
 from pyembedpg import PyEmbedPg, PyEmbedPgException
 
 
-POSTGRES_VERSION = '9.5.3'
-POSTGIS_VERSION = '2.2.2'
+POSTGRES_VERSION = '9.6.3'
+POSTGIS_VERSION = 'ff0a844e606622f45841fc25221bbaa136ed1001'  # 2017/05/31
 POSTGIS_URL = (
-    'http://download.osgeo.org/postgis/source/postgis-{}.tar.gz'
+    'https://github.com/postgis/postgis/archive/{}.tar.gz'
     .format(POSTGIS_VERSION))
 
 POINTCLOUD_VERSION = 'master'  # dev branch of li3ds org
@@ -27,11 +27,7 @@ EXTENSION_DIR = str((Path(__file__).parent.parent).resolve())
 
 
 @pytest.fixture(scope="session")
-def postgres(request):
-    def endup():
-        print("Database shutdown")
-        pg.shutdown()
-    request.addfinalizer(endup)
+def postgres():
 
     pg = PyEmbedPg(POSTGRES_VERSION, config_options='--with-python').start(15432)
     pg.create_database('testdb')
@@ -49,7 +45,10 @@ def postgres(request):
 
     load_extensions(pg)
 
-    return pg
+    yield pg
+
+    print("Database shutdown")
+    pg.shutdown()
 
 
 def load_extensions(pg):
@@ -96,8 +95,11 @@ def install_postgis(env):
             with tarfile.open(fd.name) as tar:
                 tar.extractall(temp_dir)
             subprocess.check_call(
-                'cd {path} && ./configure --prefix={target_dir} && make install'
-                .format(path=source_dir, target_dir=target_dir),
+                'cd {path} && '
+                './autogen.sh && '
+                './configure --prefix={target_dir} --with-pgconfig={cache_dir}/{postgres_version}/bin/pg_config && '
+                'make install'
+                .format(path=source_dir, target_dir=target_dir, cache_dir=cache_dir, postgres_version=POSTGRES_VERSION),
                 shell=True, env=env
             )
         finally:
@@ -134,10 +136,12 @@ def install_pointcloud(env):
             with tarfile.open(fd.name) as tar:
                 tar.extractall(temp_dir)
             subprocess.check_call(
-                'cd {path} && ./autogen.sh &&  '
-                './configure --prefix={target_dir} && '
-                'make && make install'
-                .format(path=source_dir, target_dir=target_dir),
+                'cd {path} && '
+                './autogen.sh &&  '
+                './configure --prefix={target_dir} --with-pgconfig={cache_dir}/{postgres_version}/bin/pg_config && '
+                'make &&'
+                'make install'
+                .format(path=source_dir, target_dir=target_dir, cache_dir=cache_dir, postgres_version=POSTGRES_VERSION),
                 shell=True, env=env
             )
             # empty dir since pointcloud doesn't have binaries but usefull to cache
