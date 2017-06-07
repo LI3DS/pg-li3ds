@@ -316,11 +316,11 @@ create table transfo_tree(
     , name varchar not null
     , description varchar
     , owner varchar
-    , sensor_connections boolean default false
+    , sensor integer references sensor(id)
     , transfos integer[]
 	check (
         foreign_key_array(transfos, 'li3ds.transfo')
-        and (sensor_connections or check_istree(transfos))
+        and (sensor is NULL or check_istree(transfos))
     )
 );
 

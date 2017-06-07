@@ -63,6 +63,8 @@ transfos_sample = '''
 
 
 add_sensor_group = '''
+    insert into sensor(id, name, serial_number, type)
+    values (1, 'mysensor', 'XKB', 'image');
     insert into referential (id, name)
     values (6, 'r6'), (7, 'r7'), (8, 'r8'), (9, 'r9');
     insert into transfo (id, name, source, target)
@@ -125,8 +127,8 @@ def test_transfo_tree_sensor_connection_ok(db):
     db.execute(transfos_sample)
     db.execute(add_sensor_group)
     assert db.rowcount('''
-        insert into transfo_tree (id, name, sensor_connections, transfos)
-        values (1, 't1', true, ARRAY[5])''') == 1
+        insert into transfo_tree (id, name, sensor, transfos)
+        values (1, 't1', 1, ARRAY[5])''') == 1
 
 
 def test_transfo_tree_sensor_connection_ko(db):
@@ -135,8 +137,8 @@ def test_transfo_tree_sensor_connection_ko(db):
     db.execute(add_sensor_group)
     with pytest.raises(psycopg2.IntegrityError):
         db.execute('''
-        insert into transfo_tree (id, name, sensor_connections, transfos)
-        values (1, 't1', false, ARRAY[1, 5])''') == 1
+        insert into transfo_tree (id, name, sensor, transfos)
+        values (1, 't1', NULL, ARRAY[1, 5])''') == 1
 
 
 def test_foreign_key_array_ok(db):
