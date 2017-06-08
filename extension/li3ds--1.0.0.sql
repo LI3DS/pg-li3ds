@@ -90,6 +90,30 @@ create table datasource(
     , constraint uniqdatasource unique(uri, session, referential)
 );
 
+
+create table image(
+    id bigserial primary key
+    , uri varchar
+    , exif jsonb
+    , etime timestamptz
+    , datasource bigint references li3ds.datasource(id) on delete cascade
+    , constraint uniqimageuri unique(uri, datasource)
+);
+
+create table route(
+    id bigserial primary key
+    , uri varchar
+    , datasource bigint references li3ds.datasource(id) on delete cascade
+    , constraint uniqrouteuri unique(uri, datasource)
+);
+
+create table lidar(
+    id bigserial primary key
+    , uri varchar
+    , datasource bigint references li3ds.datasource(id) on delete cascade
+    , constraint uniqlidaruri unique(uri, datasource)
+);
+
 create table processing(
     id serial primary key
     , launched timestamptz
