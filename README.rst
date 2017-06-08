@@ -131,7 +131,9 @@ Install the pg_li3ds extension and load it into your database::
 
 Data model preview:
 
-.. image:: https://cdn.rawgit.com/li3ds/pg_li3ds/master/datamodel.svg
+.. image:: datamodel.svg
+   :target: https://cdn.rawgit.com/li3ds/pg_li3ds/master/datamodel.svg
+
 
 =========
 Run tests
