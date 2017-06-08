@@ -129,6 +129,10 @@ Install the pg_li3ds extension and load it into your database::
     psql -d yourdatabase
     create extension li3ds;
 
+Data model preview:
+
+.. image:: datamodel.svg
+
 =========
 Run tests
 =========
