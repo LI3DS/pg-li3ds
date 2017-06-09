@@ -1,5 +1,5 @@
 ########
-pg_li3ds
+pg-li3ds
 ########
 
 PostgreSQL extension for managing 3D sensor data.
@@ -121,18 +121,18 @@ Create a yourdatabase and the required extensions
     create extension pointcloud;
     create extension pointcloud_postgis;
 
-Install the pg_li3ds extension and load it into your database::
+Install the ``li3ds`` extension and load it into your database::
 
-    git clone https://github.com/li3ds/pg_li3ds
-    cd pg_li3ds
+    git clone https://github.com/li3ds/pg-li3ds
+    cd pg-li3ds
     make install
     psql -d yourdatabase
     create extension li3ds;
 
 Data model preview:
 
-.. image:: https://cdn.rawgit.com/li3ds/pg_li3ds/master/datamodel.svg
-   :target: https://cdn.rawgit.com/li3ds/pg_li3ds/master/datamodel.svg
+.. image:: https://cdn.rawgit.com/li3ds/pg-li3ds/master/datamodel.svg
+   :target: https://cdn.rawgit.com/li3ds/pg-li3ds/master/datamodel.svg
 
 
 =========
@@ -146,12 +146,12 @@ see `tests/readme`_
 .. _`LI3DS/pointcloud#10`: https://github.com/LI3DS/pointcloud/issues/10
 .. _`LI3DS/pointcloud#9`: https://github.com/LI3DS/pointcloud/issues/9
 .. _`LI3DS/pointcloud#5`: https://github.com/LI3DS/pointcloud/issues/5
-.. _`tests/readme`: https://github.com/LI3DS/pg_li3ds/blob/master/tests/readme.rst
+.. _`tests/readme`: https://github.com/LI3DS/pg-li3ds/blob/master/tests/readme.rst
 
-.. |unix_build| image:: https://img.shields.io/travis/LI3DS/pg_li3ds/master.svg?style=flat-square&label=unix%20build
-    :target: http://travis-ci.org/LI3DS/pg_li3ds
+.. |unix_build| image:: https://img.shields.io/travis/LI3DS/pg-li3ds/master.svg?style=flat-square&label=unix%20build
+    :target: http://travis-ci.org/LI3DS/pg-li3ds
     :alt: Build status of the master branch
 
 .. |license| image:: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
-    :target: https://raw.githubusercontent.com/LI3DS/pg_li3ds/master/LICENSE.txt
+    :target: https://raw.githubusercontent.com/LI3DS/pg-li3ds/master/LICENSE.txt
     :alt: Package license
