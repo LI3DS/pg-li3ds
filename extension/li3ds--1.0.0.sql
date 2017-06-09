@@ -107,7 +107,7 @@ create table transfo_type(
 );
 
 -- add constraint on transformation insertion
-create or replace function check_transfo_args(parameters jsonb[], transfo_type_id int)
+create or replace function check_transfo_args(parameters jsonb, transfo_type_id int)
 returns boolean as $$
     declare
         transfo_type record;
@@ -116,6 +116,10 @@ returns boolean as $$
     begin
         if parameters is null then
             return true;
+        end if;
+
+        if jsonb_typeof(parameters) <> 'array' then
+            return false;
         end if;
 
         select func_signature from li3ds.transfo_type t
@@ -127,15 +131,15 @@ returns boolean as $$
         signature := transfo_type.func_signature;
 
         -- _time not mandatory is there's only one element is the parameters array
-        if array_length(parameters, 1) < 2 then
+        if jsonb_array_length(parameters) < 2 then
             signature := array_remove(signature, '_time');
         end if;
 
-        if array_length(parameters, 1) is null and array_length(signature, 1) >= 1 then
+        if jsonb_array_length(parameters) = 0 and array_length(signature, 1) >= 1 then
             return false;
         end if;
 
-        for element in select unnest(parameters) json loop
+        for element in select jsonb_array_elements(parameters) json loop
             if not (element.json ?& signature) then
                 return false;
             end if;
@@ -174,7 +178,7 @@ create table transfo(
     , tdate timestamptz default now()
     , validity_start timestamptz default '-infinity'
     , validity_end timestamptz default 'infinity'
-    , parameters jsonb[] check (check_transfo_args(parameters, transfo_type))
+    , parameters jsonb check (check_transfo_args(parameters, transfo_type))
     , parameters_column varchar check (check_pcpatch_column(parameters_column))
     , source int references referential(id) not null
     , target int references referential(id) not null
