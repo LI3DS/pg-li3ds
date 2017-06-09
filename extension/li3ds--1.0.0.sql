@@ -34,8 +34,8 @@ create type sensor_type as enum (
 
 create type datasource_type as enum (
     'image',
-    'route',
-    'lidar'
+    'trajectory',
+    'pointcloud'
 );
 
 create table platform(
