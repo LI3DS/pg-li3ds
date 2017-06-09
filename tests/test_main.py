@@ -84,6 +84,14 @@ add_platform_config = '''
     values (1, 'p1', 1, ARRAY[1, 2, 3])
 '''
 
+create_test_schema = '''
+    create schema test;
+'''
+
+create_patch_table = '''
+    create table test.patch (id serial, points pcpatch);
+'''
+
 
 def test_schema_li3ds(db):
     assert db.hasschema('li3ds')
@@ -101,6 +109,42 @@ def test_table_list(db):
     assert db.hastable('li3ds', 'transfo')
     assert db.hastable('li3ds', 'transfo_type')
     assert db.hastable('li3ds', 'transfo_tree')
+
+
+def test_check_datasource_uri_bad_scheme_ko(db):
+    assert not db.query('''
+        select check_datasource_uri('bad:/path/to/file')
+    ''')[0][0]
+
+
+def test_check_datasource_uri_file_ok(db):
+    assert db.query('''
+        select check_datasource_uri('file:/path/to/file')
+    ''')[0][0]
+
+
+def test_check_datasource_uri_column_bad_format_ko(db):
+    db.execute(create_test_schema)
+    db.execute(create_patch_table)
+    assert not db.query('''
+        select check_datasource_uri('column:patch.points')
+    ''')[0][0]
+
+
+def test_check_datasource_uri_column_nonexisting_column_ko(db):
+    db.execute(create_test_schema)
+    db.execute(create_patch_table)
+    assert not db.query('''
+        select check_datasource_uri('column:test.patch.foo')
+    ''')[0][0]
+
+
+def test_check_datasource_uri_column_ok(db):
+    db.execute(create_test_schema)
+    db.execute(create_patch_table)
+    assert db.query('''
+        select check_datasource_uri('column:test.patch.points')
+    ''')[0][0]
 
 
 def test_check_transfo_exists_constraint_ko(db):

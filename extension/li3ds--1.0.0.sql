@@ -76,10 +76,54 @@ create table session(
     , platform int references platform(id) on delete cascade not null
 );
 
+create or replace function check_datasource_uri(uri text)
+returns boolean as $$
+    declare
+        path_ text;
+        scheme text;
+        uri_split text[];
+        path_split text[];
+        exists_ boolean;
+    begin
+        uri_split := regexp_split_to_array(uri, ':');
+
+        if array_length(uri_split, 1) <> 2 then
+            return false;
+        end if;
+
+        scheme := uri_split[1]; path_ := uri_split[2];
+
+        if scheme <> all (ARRAY['file', 'column']) then
+            return false;
+        end if;
+
+        if scheme = 'column' then
+            path_split := regexp_split_to_array(path_, '\.');
+
+            if array_length(path_split, 1) <> 3 then
+                return false;
+            end if;
+
+            exists_ := exists(
+                select 1 from information_schema.columns where
+                    table_schema=path_split[1] and
+                    table_name=path_split[2] and
+                    column_name=path_split[3]);
+
+            if not exists_ then
+                return false;
+            end if;
+
+        end if;
+
+        return true;
+    end;
+$$ language plpgsql;
+
 create table datasource(
     id serial primary key
     -- possible uri schemes are "file" and "column"
-    , uri varchar not null constraint uri_scheme check (split_part(uri, ':', 1) = any ('{file, column}'::text[]))
+    , uri text not null constraint uri_scheme check (check_datasource_uri(uri))
     , type datasource_type not null
     , parameters jsonb
     , bounds double precision[6]  -- [xmin, ymin, zmin, xmax, ymax, zmax]
