@@ -401,7 +401,7 @@ $CODE$
         """.format(platform_config_id)
     )[0]['trf']
 
-    # graph defined by adjacency list of edges (more usefull than nodes for us)
+    # graph defined by adjacency list of edges (more usefull than nodes for us)
     # graph = {edge: [(weigh, edge1), (weight, edge2)...], ...}
     adj_list = plpy.execute(
         """
