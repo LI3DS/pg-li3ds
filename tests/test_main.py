@@ -147,6 +147,30 @@ def test_check_datasource_uri_column_ok(db):
     ''')[0][0]
 
 
+def test_check_pcpatch_column_bad_format_ko(db):
+    db.execute(create_test_schema)
+    db.execute(create_patch_table)
+    assert not db.query('''
+        select check_pcpatch_column('test.patch');
+    ''')[0][0]
+
+
+def test_check_pcpatch_column_nonexisting_column_ko(db):
+    db.execute(create_test_schema)
+    db.execute(create_patch_table)
+    assert not db.query('''
+        select check_pcpatch_column('test.patch.foo');
+    ''')[0][0]
+
+
+def test_check_pcpatch_column_ok(db):
+    db.execute(create_test_schema)
+    db.execute(create_patch_table)
+    assert db.query('''
+        select check_pcpatch_column('test.patch.points');
+    ''')[0][0]
+
+
 def test_check_transfo_exists_constraint_ko(db):
     '''
     Insertion should fail if transformation does not exist
