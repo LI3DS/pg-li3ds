@@ -107,12 +107,12 @@ Install postgresql and plpython (The command and package name may have to be ada
 
     apt-get install postgresql-plpython3-9.6
 
-Create a yourdatabase and the required extensions
+Create a sample and the required extensions
 
 .. code-block:: bash
 
-    createdb yourdatabase
-    psql -d yourdatabase
+    createdb sample
+    psql -d sample
 
 .. code-block:: sql
 
@@ -126,7 +126,7 @@ Install the ``li3ds`` extension and load it into your database::
     git clone https://github.com/li3ds/pg-li3ds
     cd pg-li3ds
     make install
-    psql -d yourdatabase
+    psql -d sample
     create extension li3ds;
 
 Data model preview:
