@@ -17,4 +17,4 @@ install: "pip install -r tests/requirements.txt"
 script: py.test -s -v
 after_success:
   - >
-    test $TRAVIS_BRANCH = "master" && test $TRAVIS_PULL_REQUEST = "false" && curl -H "Content-Type: application/json" -X POST https://registry.hub.docker.com/u/li3ds/li3ds/trigger/$DOCKER_API_KEY
+    test $TRAVIS_BRANCH = "master" && test $TRAVIS_PULL_REQUEST = "false" && curl -H "Content-Type: application/json" -X POST https://registry.hub.docker.com/u/li3ds/li3ds/trigger/$DOCKER_API_KEY/
