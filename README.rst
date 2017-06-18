@@ -2,13 +2,10 @@
 pg-li3ds
 ########
 
-PostgreSQL extension for managing 3D sensor data.
-
-----
-
 |unix_build| |license|
 
-----
+PostgreSQL extension for managing 3D sensor data.
+
 
 .. contents::
 
