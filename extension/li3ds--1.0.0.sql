@@ -492,6 +492,7 @@ $CODE$
 
     func_names = {
         'affine_mat4x3': 'affine',
+        'affine_quat': 'affine',
     }
 
     q = '''
