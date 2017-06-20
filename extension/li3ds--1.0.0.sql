@@ -473,10 +473,10 @@ $CODE$
     for arg in args:
         args_str += ', '
         if isinstance(arg, list):
-            args_str = 'ARRAY'
+            args_str += 'ARRAY'
         args_str += '{}'.format(arg)
 
-    q = 'select pc_{}(\'{}\'::LIBOX4D, {}) r'.format(func_name, box, args_str)
+    q = 'select pc_{}(\'{}\'::LIBOX4D{}) r'.format(func_name, box, args_str)
     rv = plpy.execute(q)
     if len(rv) != 1:
         plpy.error('unexpected returned value from {}'.format(q))
@@ -492,6 +492,7 @@ $CODE$
 
     func_names = {
         'affine_mat4x3': 'affine',
+        'affine_quat': 'affine',
     }
 
     q = '''
