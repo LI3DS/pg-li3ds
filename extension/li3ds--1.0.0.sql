@@ -491,8 +491,10 @@ $CODE$
     import json
 
     func_names = {
-        'affine_mat4x3': 'affine',
-        'affine_quat': 'affine',
+        'affine_mat4x3': 'Affine',
+        'affine_quat': 'Affine',
+        'poly_radial_5': 'DistortPolyRadial5',
+        'poly_radial_7': 'DistortPolyRadial7',
     }
 
     q = '''
