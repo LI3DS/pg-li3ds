@@ -4,4 +4,4 @@ default_version = '1.0.0'
 relocatable = false
 superuser = false
 schema = 'li3ds'
-requires = 'postgis, plpython3u, pointcloud, pointcloud_postgis'
+requires = 'postgis, plpython2u, pointcloud, pointcloud_postgis'
