@@ -298,7 +298,7 @@ returns boolean as $CODE$
         )
 
     return success
-$CODE$ language plpython3u;
+$CODE$ language plpython2u;
 
 /*
 Aggregates multi-dimensionnal array using array_cat
@@ -454,7 +454,7 @@ $CODE$
         shortest_path.insert(0, x)
 
     return shortest_path
-$CODE$ language plpython3u;
+$CODE$ language plpython2u;
 
 
 ---
@@ -483,7 +483,7 @@ $CODE$
     result = rv[0]['r']
 
     return result
-$CODE$ language plpython3u;
+$CODE$ language plpython2u;
 
 create or replace function transform(box libox4d, transfoid integer)
 returns libox4d as
@@ -527,4 +527,4 @@ $CODE$
     result = rv[0]['r']
 
     return result
-$CODE$ language plpython3u;
+$CODE$ language plpython2u;

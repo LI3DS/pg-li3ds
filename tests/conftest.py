@@ -3,7 +3,6 @@ import tempfile
 import tarfile
 import shutil
 import subprocess
-from pathlib import Path
 
 import requests
 import psycopg2
@@ -23,7 +22,7 @@ POINTCLOUD_URL = (
     'https://github.com/LI3DS/pointcloud/archive/{}.tar.gz'
     .format(POINTCLOUD_VERSION))
 
-EXTENSION_DIR = str((Path(__file__).parent.parent).resolve())
+EXTENSION_DIR = os.path.abspath(os.path.join(__file__, os.path.pardir, os.path.pardir))
 
 
 @pytest.fixture(scope="session")
@@ -59,7 +58,7 @@ def load_extensions(pg):
             port=pg.running_port) as conn:
         with conn.cursor() as cursor:
             cursor.execute('CREATE extension postgis')
-            cursor.execute('CREATE extension plpython3u')
+            cursor.execute('CREATE extension plpython2u')
             cursor.execute('CREATE extension pointcloud')
             cursor.execute('CREATE extension pointcloud_postgis')
             cursor.execute('CREATE extension li3ds')

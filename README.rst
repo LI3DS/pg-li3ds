@@ -102,7 +102,7 @@ Install postgresql and plpython (The command and package name may have to be ada
 
 .. code-block:: bash
 
-    apt-get install postgresql-plpython3-9.6
+    apt-get install postgresql-plpython-9.6
 
 Create a sample and the required extensions
 
@@ -113,7 +113,7 @@ Create a sample and the required extensions
 
 .. code-block:: sql
 
-    create extension plpython3u;
+    create extension plpython2u;
     create extension postgis;
     create extension pointcloud;
     create extension pointcloud_postgis;
