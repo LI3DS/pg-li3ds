@@ -83,7 +83,7 @@ returns boolean as $$
         scheme text;
         uri_split text[];
         path_split text[];
-        exists_ boolean;
+        rec record;
     begin
         uri_split := regexp_split_to_array(uri, ':');
 
@@ -104,16 +104,15 @@ returns boolean as $$
                 return false;
             end if;
 
-            exists_ := exists(
-                select 1 from information_schema.columns where
-                    table_schema=path_split[1] and
-                    table_name=path_split[2] and
-                    column_name=path_split[3]);
+            execute format('select count(*) as cnt from pg_catalog.pg_attribute where '
+                           'attrelid=to_regclass($1 || ''.%I'') and '
+                           'attname=$2 and '
+                           'atttypid=''pcpatch''::regtype and attnum > 0 and '
+                           'not attisdropped', path_split[2])
+                    into rec
+                    using path_split[1], path_split[3];
 
-            if not exists_ then
-                return false;
-            end if;
-
+            return rec.cnt::int = 1;
         end if;
 
         return true;
@@ -197,6 +196,7 @@ create or replace function check_pcpatch_column(schema_table_column varchar)
 returns boolean as $$
     declare
       schema_table_column_array text[];
+      rec record;
     begin
         if schema_table_column is null then
             return true;
@@ -205,13 +205,14 @@ returns boolean as $$
         if array_length(schema_table_column_array, 1) <> 3 then
             return false;
         end if;
-        return exists(
-            select 1 from information_schema.columns where
-                table_schema=schema_table_column_array[1] and
-                table_name=schema_table_column_array[2] and
-                column_name=schema_table_column_array[3] and
-                udt_name='pcpatch'
-        );
+        execute format('select count(*) as cnt from pg_catalog.pg_attribute where '
+                       'attrelid=to_regclass($1 || ''.%I'') and '
+                       'attname=$2 and '
+                       'atttypid=''pcpatch''::regtype and attnum > 0 and '
+                       'not attisdropped', schema_table_column_array[2])
+                into rec
+                using schema_table_column_array[1], schema_table_column_array[3];
+        return rec.cnt::int = 1;
     end;
 $$ language plpgsql;
 
