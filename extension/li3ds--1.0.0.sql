@@ -1,6 +1,11 @@
 -- complain if script is sourced in psql, rather than via CREATE EXTENSION
 \echo Use "CREATE EXTENSION li3ds" to load this file. \quit
 
+create or replace function postgres_version()
+returns text as $$
+    select setting as version from pg_settings where name = 'server_version';
+$$ language sql;
+
 
 create or replace function check_timezone_name(timezone varchar)
 returns boolean as $$
@@ -104,13 +109,23 @@ returns boolean as $$
                 return false;
             end if;
 
-            execute format('select count(*) as cnt from pg_catalog.pg_attribute where '
-                           'attrelid=to_regclass($1 || ''.%I'') and '
-                           'attname=$2 and '
-                           'atttypid=''pcpatch''::regtype and attnum > 0 and '
-                           'not attisdropped', path_split[2])
-                    into rec
-                    using path_split[1], path_split[3];
+            if postgres_version() < '9.6.0'  then
+                execute format('select count(*) as cnt from pg_catalog.pg_attribute where '
+                               'attrelid=to_regclass(($1 || ''.%I'')::cstring) and '
+                               'attname=$2 and '
+                               'atttypid=''pcpatch''::regtype and attnum > 0 and '
+                               'not attisdropped', path_split[2])
+                        into rec
+                        using path_split[1], path_split[3];
+            else
+                execute format('select count(*) as cnt from pg_catalog.pg_attribute where '
+                               'attrelid=to_regclass($1 || ''.%I'') and '
+                               'attname=$2 and '
+                               'atttypid=''pcpatch''::regtype and attnum > 0 and '
+                               'not attisdropped', path_split[2])
+                        into rec
+                        using path_split[1], path_split[3];
+            end if;
 
             return rec.cnt::int = 1;
         end if;
@@ -205,13 +220,23 @@ returns boolean as $$
         if array_length(schema_table_column_array, 1) <> 3 then
             return false;
         end if;
-        execute format('select count(*) as cnt from pg_catalog.pg_attribute where '
-                       'attrelid=to_regclass($1 || ''.%I'') and '
-                       'attname=$2 and '
-                       'atttypid=''pcpatch''::regtype and attnum > 0 and '
-                       'not attisdropped', schema_table_column_array[2])
-                into rec
-                using schema_table_column_array[1], schema_table_column_array[3];
+        if postgres_version() < '9.6.0'  then
+            execute format('select count(*) as cnt from pg_catalog.pg_attribute where '
+                           'attrelid=to_regclass(($1 || ''.%I'')::cstring) and '
+                           'attname=$2 and '
+                           'atttypid=''pcpatch''::regtype and attnum > 0 and '
+                           'not attisdropped', schema_table_column_array[2])
+                    into rec
+                    using schema_table_column_array[1], schema_table_column_array[3];
+        else
+            execute format('select count(*) as cnt from pg_catalog.pg_attribute where '
+                           'attrelid=to_regclass($1 || ''.%I'') and '
+                           'attname=$2 and '
+                           'atttypid=''pcpatch''::regtype and attnum > 0 and '
+                           'not attisdropped', schema_table_column_array[2])
+                    into rec
+                    using schema_table_column_array[1], schema_table_column_array[3];
+        end if;
         return rec.cnt::int = 1;
     end;
 $$ language plpgsql;
