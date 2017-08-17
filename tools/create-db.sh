@@ -5,7 +5,7 @@ set -e
 DBNAME="${DBNAME:=li3ds}"
 DBUSER="${DBUSER:=li3ds}"
 
-sudo make install
+sudo make install PIP_EDITABLE_MODE=TRUE PIP_COMMAND=/usr/bin/pip2
 
 sudo -u postgres dropdb --if-exists ${DBNAME}
 sudo -u postgres createdb -O ${DBUSER} ${DBNAME}
