@@ -494,16 +494,16 @@ $CODE$
     return pg_li3ds._transform_box4d(box4d, func_name, func_sign, params)
 $CODE$ language plpython2u;
 
-create or replace function transform(box libox4d, transfoid integer)
+create or replace function transform(box libox4d, transfoid integer, ttime float8 default 0.0)
 returns libox4d as
 $CODE$
     import pg_li3ds
-    return pg_li3ds.transform_box4d(box, transfoid)
+    return pg_li3ds.transform_box4d(box, transfoid, ttime)
 $CODE$ language plpython2u;
 
-create or replace function transform(patch pcpatch, transfoid integer)
+create or replace function transform(patch pcpatch, transfoid integer, ttime float8 default 0.0)
 returns pcpatch as
 $CODE$
     import pg_li3ds
-    return pg_li3ds.transform_patch(patch, transfoid)
+    return pg_li3ds.transform_patch(patch, transfoid, ttime)
 $CODE$ language plpython2u;
