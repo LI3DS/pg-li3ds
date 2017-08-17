@@ -47,7 +47,6 @@ def get_dyn_transfo_params(params_column, params, time):
             append_dim_select(dim, select)
     select = ', '.join(select)
 
-    # TODO: we could do better with an index
     q = ('''
         with patch as (
             select pc_interpolate({column}, 'time', {time:f}, true) point
