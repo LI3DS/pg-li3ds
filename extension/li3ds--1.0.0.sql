@@ -488,69 +488,22 @@ $CODE$ language plpython2u;
 ---
 
 create or replace function transform(box libox4d, func_name text, func_sign text[], params text)
-returns text as
-$CODE$
-    import json
-
-    _params = json.loads(params)
-
-    args = [_params[p] for p in func_sign if p != '_time']
-    args_str = ''
-    for arg in args:
-        args_str += ', '
-        if isinstance(arg, list):
-            args_str += 'ARRAY'
-        args_str += '{}'.format(arg)
-
-    q = 'select pc_{}(\'{}\'::LIBOX4D{}) r'.format(func_name, box, args_str)
-    rv = plpy.execute(q)
-    if len(rv) != 1:
-        plpy.error('unexpected returned value from {}'.format(q))
-    result = rv[0]['r']
-
-    return result
-$CODE$ language plpython2u;
-
-create or replace function transform(box libox4d, transfoid integer)
 returns libox4d as
 $CODE$
-    import json
+    import pg_li3ds
+    return pg_li3ds._transform_box4d(box4d, func_name, func_sign, params)
+$CODE$ language plpython2u;
 
-    func_names = {
-        'affine_mat4x3': 'affine',
-        'affine_quat': 'affine',
-    }
+create or replace function transform(box libox4d, transfoid integer, ttime float8 default 0.0)
+returns libox4d as
+$CODE$
+    import pg_li3ds
+    return pg_li3ds.transform_box4d(box, transfoid, ttime)
+$CODE$ language plpython2u;
 
-    q = '''
-        select t.name as name, t.parameters as params,
-               tt.name as func_name, tt.func_signature as func_sign
-        from li3ds.transfo t
-        join li3ds.transfo_type tt on t.transfo_type = tt.id
-        where t.id = {:d}
-        '''.format(transfoid)
-    rv = plpy.execute(q)
-    if len(rv) < 1:
-        plpy.error('no transfo with id {:d}'.format(transfoid))
-    transfo = rv[0]
-
-    func_name = transfo['func_name']
-    if func_name not in func_names:
-        plpy.error('function {} is unknown', func_name)
-    func_sign = transfo['func_sign']
-    params = json.loads(transfo['params'])
-
-    plpy.log('apply transfo {} (function: {}) to box'.format(
-        transfo['name'], func_name))
-
-    # assume the transfom is static for now
-    params = params[0]
-
-    q = "select li3ds.transform('{}'::LIBOX4D, '{}', ARRAY{}, '{}') r".format(
-        box, func_names[func_name], func_sign, json.dumps(params))
-    rv = plpy.execute(q)
-    if len(rv) != 1:
-        plpy.error('unexpected returned value from {}'.format(q))
-    result = rv[0]['r']
-
-    return result
+create or replace function transform(patch pcpatch, transfoid integer, ttime float8 default 0.0)
+returns pcpatch as
+$CODE$
+    import pg_li3ds
+    return pg_li3ds.transform_patch(patch, transfoid, ttime)
 $CODE$ language plpython2u;
