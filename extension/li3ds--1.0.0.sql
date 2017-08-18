@@ -421,23 +421,58 @@ $CODE$ language plpython2u;
 -- Transformation functions
 ---
 
-create or replace function transform(box libox4d, func_name text, func_sign text[], params text)
+create or replace function transform(box4d libox4d, func_name text, func_sign text[], params text)
 returns libox4d as
 $CODE$
     import pg_li3ds
     return pg_li3ds._transform_box4d(box4d, func_name, func_sign, params)
 $CODE$ language plpython2u;
 
-create or replace function transform(box libox4d, transfoid integer, ttime float8 default 0.0)
+create or replace function transform(box4d libox4d, transfo integer, ttime float8 default 0.0)
 returns libox4d as
 $CODE$
     import pg_li3ds
-    return pg_li3ds.transform_box4d(box, transfoid, ttime)
+    return pg_li3ds.transform_box4d_one(box4d, transfo, ttime)
 $CODE$ language plpython2u;
 
-create or replace function transform(patch pcpatch, transfoid integer, ttime float8 default 0.0)
+create or replace function transform(box4d libox4d, transfos integer[], ttime float8 default 0.0)
+returns libox4d as
+$CODE$
+    import pg_li3ds
+    return pg_li3ds.transform_box4d_list(box4d, transfos, ttime)
+$CODE$ language plpython2u;
+
+create or replace function transform(box4d libox4d, config integer, source integer, target integer, ttime float8 default 0.0)
+returns libox4d as
+$CODE$
+    import pg_li3ds
+    return pg_li3ds.transform_box4d_config(box4d, config, source, target, ttime)
+$CODE$ language plpython2u;
+
+create or replace function transform(patch pcpatch, func_name text, func_sign text[], params text)
+returns libox4d as
+$CODE$
+    import pg_li3ds
+    return pg_li3ds._transform_patch(patch, func_name, func_sign, params)
+$CODE$ language plpython2u;
+
+create or replace function transform(patch pcpatch, transfo integer, ttime float8 default 0.0)
 returns pcpatch as
 $CODE$
     import pg_li3ds
-    return pg_li3ds.transform_patch(patch, transfoid, ttime)
+    return pg_li3ds.transform_patch_one(patch, transfo, ttime)
+$CODE$ language plpython2u;
+
+create or replace function transform(patch pcpatch, transfos integer[], ttime float8 default 0.0)
+returns pcpatch as
+$CODE$
+    import pg_li3ds
+    return pg_li3ds.transform_patch_list(patch, transfos, ttime)
+$CODE$ language plpython2u;
+
+create or replace function transform(patch pcpatch, config integer, source integer, target integer, ttime float8 default 0.0)
+returns pcpatch as
+$CODE$
+    import pg_li3ds
+    return pg_li3ds.transform_patch_config(patch, config, source, target, ttime)
 $CODE$ language plpython2u;

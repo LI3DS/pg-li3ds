@@ -256,13 +256,7 @@ def _transform_box4d(box4d, func_name, func_sign, params):
     return _transform(box4d, 'LIBOX4D', func_name, func_sign, params)
 
 
-def _transform_patch(patch, func_name, func_sign, params):
-    ''' Transform the patch, using func_name, func_sign and params.
-    '''
-    return _transform(patch, 'PCPATCH', func_name, func_sign, params)
-
-
-def transform_box4d(box4d, transfoid, time):
+def transform_box4d_one(box4d, transfoid, time):
     ''' Transform the box4d, using transfoid and time. time is ignored if the transform
         is static.
     '''
@@ -274,7 +268,27 @@ def transform_box4d(box4d, transfoid, time):
     return _transform_box4d(box4d, func_name, func_sign, params)
 
 
-def transform_patch(patch, transfoid, time):
+def transform_box4d_list(box4d, transfoids, time):
+    ''' Transform the box4d, using all the transforms in the transfoids list. '''
+    for transfoid in transfoids:
+        box4d = transform_box4d_one(box4d, transfoid, time)
+    return box4d
+
+
+def transform_box4d_config(box4d, config, source, target, time):
+    ''' Apply the transform path from "source" to "target" for the provided "config".
+    '''
+    transforms = dijkstra(config, source, target)
+    return transform_box4d_list(box4d, transforms, time)
+
+
+def _transform_patch(patch, func_name, func_sign, params):
+    ''' Transform the patch, using func_name, func_sign and params.
+    '''
+    return _transform(patch, 'PCPATCH', func_name, func_sign, params)
+
+
+def transform_patch_one(patch, transfoid, time):
     ''' Transform the patch, using transfoid and time. time is ignored if the transform
         is static.
     '''
@@ -284,3 +298,17 @@ def transform_patch(patch, transfoid, time):
     name, params, func_name, func_sign = transfo
     plpy.log('apply transfo "{}" (function: "{}") to patch'.format(name, func_name))
     return _transform_patch(patch, func_name, func_sign, params)
+
+
+def transform_patch_list(patch, transfoids, time):
+    ''' Transform the patch, using all the transforms in the transfoids list. '''
+    for transfoid in transfoids:
+        patch = transform_patch_one(patch, transfoid, time)
+    return patch
+
+
+def transform_patch_config(patch, config, source, target, time):
+    ''' Apply the transform path from "source" to "target" for the provided "config".
+    '''
+    transforms = dijkstra(config, source, target)
+    return transform_patch_list(patch, transforms, time)
