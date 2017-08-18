@@ -109,7 +109,7 @@ returns boolean as $$
                 return false;
             end if;
 
-            if postgres_version() < '9.6.0'  then
+            if li3ds.postgres_version() < '9.6.0'  then
                 execute format('select count(*) as cnt from pg_catalog.pg_attribute where '
                                'attrelid=to_regclass(($1 || ''.%I'')::cstring) and '
                                'attname=$2 and '
@@ -220,7 +220,7 @@ returns boolean as $$
         if array_length(schema_table_column_array, 1) <> 3 then
             return false;
         end if;
-        if postgres_version() < '9.6.0'  then
+        if li3ds.postgres_version() < '9.6.0'  then
             execute format('select count(*) as cnt from pg_catalog.pg_attribute where '
                            'attrelid=to_regclass(($1 || ''.%I'')::cstring) and '
                            'attname=$2 and '
