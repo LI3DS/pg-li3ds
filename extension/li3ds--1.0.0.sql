@@ -411,75 +411,11 @@ create table platform_config(
     )
 );
 
-create or replace function dijkstra(platform_config_id integer,
-    source integer, target integer)
+create or replace function dijkstra(config integer, source integer, target integer)
 returns integer[] as
 $CODE$
-    from heapq import heappop, heappush
-
-    # get all transformations involved in the transfo tree list
-    transfo_list = plpy.execute(
-        """
-        select array_aggmult(tt.transfos) as trf
-        from li3ds.platform_config pf
-        join li3ds.transfo_tree tt on tt.id = ANY(pf.transfo_trees)
-        where pf.id = {}
-        """.format(platform_config_id)
-    )[0]['trf']
-
-    # graph defined by adjacency list of edges (more usefull than nodes for us)
-    # graph = {edge: [(weigh, edge1), (weight, edge2)...], ...}
-    adj_list = plpy.execute(
-        """
-        select t.id, array_agg(ta.id) as adj_list
-        from li3ds.transfo t,
-        unnest(array[t.source, t.target]) as ref
-        join li3ds.transfo ta on array[ta.id] <@ array[{}]
-        and (ref = ta.source or ref = ta.target)
-        where t.id != ta.id
-        group by t.id;
-        """.format(','.join(map(str, transfo_list)))
-    )
-    # contructs graph
-    graph = {
-        column['id']: [(1, idt) for idt in column['adj_list']]
-        for column in adj_list
-    }
-
-    if source not in graph:
-        raise Exception("No transformation with id {}".format(source))
-    if target not in graph:
-        raise Exception("No transformation with id {}".format(target))
-
-    M = set()
-    d = {source: 0}
-    p = {}
-    suivants = [(0, source)]
-
-    while suivants != []:
-
-        dx, x = heappop(suivants)
-        if x in M:
-            continue
-
-        M.add(x)
-
-        for w, y in graph[x]:
-            if y in M:
-                continue
-            dy = dx + w
-            if y not in d or d[y] > dy:
-                d[y] = dy
-                heappush(suivants, (dy, y))
-                p[y] = x
-
-    shortest_path = [target]
-    x = target
-    while x != source:
-        x = p[x]
-        shortest_path.insert(0, x)
-
-    return shortest_path
+    import pg_li3ds
+    return pg_li3ds.dijkstra(config, source, target)
 $CODE$ language plpython2u;
 
 
