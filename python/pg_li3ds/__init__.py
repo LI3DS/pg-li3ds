@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+from heapq import heappop, heappush
+import json
 
 import plpy
-import json
+
 
 __version__ = '0.1.dev0'
 
@@ -11,6 +13,105 @@ func_names = {
     'affine_quat': 'PC_Affine',
     'spherical_to_cartesian': 'PC_SphericalToCartesian',
 }
+
+
+def dijkstra(config, source, target):
+    '''
+    returns the transfo list needed to go from source referential to target
+    referential
+    '''
+
+    # get all transformations involved in the transfo tree list
+    transfo_list = plpy.execute(
+        """
+        select array_aggmult(tt.transfos) as trf
+        from li3ds.platform_config pf
+        join li3ds.transfo_tree tt on tt.id = ANY(pf.transfo_trees)
+        where pf.id = {}
+        """.format(config)
+    )[0]['trf']
+
+    # list of adjacent nodes (referentials)
+    # adj_list = [ref1: [ref7, ref1], ref2: [ref3]...]
+    result = plpy.execute(
+        """
+        select
+            r.id
+            , array_agg(t.target)
+              filter (where t.target is not NULL) as adj_list
+              -- we keep a NULL column instead of an array
+              -- with a null value inside
+        from li3ds.referential r
+        left join li3ds.transfo t
+            -- we only keep direct transformations
+            on t.source = r.id
+            and array[t.id] <@ array[{}]
+        group by r.id
+        """.format(','.join(map(str, transfo_list)))
+    )
+    # build graph
+    # graph = {ref1: [(1, ref7), (1, ref3)...], ...}
+    graph = {}
+    for column in result:
+        if column['adj_list'] is not None:
+            graph[column['id']] = [(1, idt) for idt in column['adj_list']]
+        else:
+            graph[column['id']] = []
+
+    if source not in graph:
+        raise Exception("No referential with id {}".format(source))
+    if target not in graph:
+        raise Exception("No referential with id {}".format(target))
+
+    M = set()
+    d = {source: 0}
+    p = {}
+    next_nodes = [(0, source)]
+
+    while next_nodes:
+
+        dx, x = heappop(next_nodes)
+        if x in M:
+            continue
+
+        M.add(x)
+
+        for w, y in graph[x]:
+            if y in M:
+                continue
+            dy = dx + w
+            if y not in d or d[y] > dy:
+                d[y] = dy
+                heappush(next_nodes, (dy, y))
+                p[y] = x
+
+    shortest_path = [target]
+    x = target
+    while x != source:
+        try:
+            x = p[x]
+        except KeyError:
+            plpy.notice("No path from ref:{} to ref:{} with config {}"
+                        .format(source, target, config))
+            return []
+        shortest_path.insert(0, x)
+
+    # we have referentials now we need all transformations
+    # assembling refs by pair
+    ref_pair = [
+        shortest_path[i:i + 2]
+        for i in range(0, len(shortest_path) - 1)]
+
+    transfos = []
+    for ref_source, ref_target in ref_pair:
+        transfos.append(plpy.execute(
+            """
+            select id
+            from li3ds.transfo
+            where source = {} and target = {}
+            """.format(ref_source, ref_target))[0]['id'])
+
+    return transfos
 
 
 def dim_name(dim):

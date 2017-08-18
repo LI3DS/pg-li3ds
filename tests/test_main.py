@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 Graph used in tests (nodes are referentials, edges are transformations)
 
@@ -12,13 +13,13 @@ Graph used in tests (nodes are referentials, edges are transformations)
 +-+        +-+        +-+         |
 |4|<---3---|2|---2--->|3|         |  sensor group 1
 +-+        +-+        +-+         |
-            ^                     |
-            |                     |
-            4                     |
-            |                     |
-            |                     |
-           +++                   /
-           |5|                  /
+            | ↖                   |
+            |  \                  |
+            4   9                 |
+            |  /                  |
+            v /                   |
+           +++                    /
+           |5|                   /
            +++
             |
             5              <--------------- sensor connection
@@ -54,32 +55,61 @@ def db(postgres):
     db.conn.rollback()
 
 
-transfos_sample = '''
-    insert into referential (id, name)
-    values (1, 'r1'), (2, 'r2'), (3, 'r3'), (4, 'r4'), (5, 'r5');
-    insert into transfo (id, name, source, target)
-    values (1, 't1', 1, 2), (2, 't2', 2, 3), (3, 't3', 2, 4), (4, 't4', 5, 2);
-'''
-
-
-add_sensor_group = '''
+add_sensor_group1 = '''
     insert into sensor(id, name, serial_number, type)
-    values (1, 'mysensor', 'XKB', 'camera');
-    insert into referential (id, name)
-    values (6, 'r6'), (7, 'r7'), (8, 'r8'), (9, 'r9');
+    values (1, 'cam', 'XKB', 'camera');
+
+    insert into referential (id, sensor, name)
+    values (1, 1, 'r1'), (2, 1, 'r2'),
+           (3, 1, 'r3'), (4, 1, 'r4'),
+           (5, 1, 'r5');
+
     insert into transfo (id, name, source, target)
-    values (5, 't5', 5, 6), (6, 't6', 6, 7), (7, 't7', 6, 8), (8, 't8', 6, 9);
+    values (1, 't1', 1, 2), (2, 't2', 2, 3),
+           (3, 't3', 2, 4), (4, 't4', 2, 5);
 '''
 
-add_transfo_trees = '''
-    insert into platform (id, name) values (1, 'platform');
-    insert into transfo_tree(id, name, transfos) values (1, 't1', ARRAY[1, 2, 3, 4]);
-    insert into transfo_tree(id, name, transfos) values (2, 't2', ARRAY[6, 7, 8]);
+add_reverse_transfo = '''
+    insert into transfo (id, name, source, target)
+    values (9, 't9', 5, 2)
+'''
+
+add_sensor_group2 = '''
+    insert into sensor(id, name, serial_number, type)
+    values (2, 'ins', 'INS', 'ins');
+
+    insert into referential (id, sensor, name)
+    values (6, 2, 'r6'), (7, 2, 'r7'),
+           (8, 2, 'r8'), (9, 2, 'r9');
+
+    insert into transfo (id, name, source, target)
+    values (6, 't6', 6, 7),
+           (7, 't7', 6, 8), (8, 't8', 6, 9);
+'''
+
+add_sensor_connection = '''
+    insert into transfo (id, name, source, target)
+    values (5, 't5', 5, 6);
+
     insert into transfo_tree(id, name, sensor, transfos)
     values (3, 't3', NULL, ARRAY[5]);
 '''
 
+add_transfo_trees = '''
+    insert into transfo_tree(id, name, sensor, transfos)
+    values (1, 't1', 1, ARRAY[1, 2, 3, 4]),
+           (2, 't2', 2, ARRAY[6, 7, 8]);
+'''
+
+add_transfo_trees_ko = '''
+    insert into transfo_tree(id, name, sensor, transfos) values
+        (1, 't1', 1, ARRAY[1, 2, 3, 9]),
+        (2, 't2', 2, ARRAY[6, 7, 8]);
+'''
+
 add_platform_config = '''
+    insert into platform (id, name) values (1, 'platform');
+
     insert into platform_config (id, name, platform, transfo_trees)
     values (1, 'p1', 1, ARRAY[1, 2, 3])
 '''
@@ -171,11 +201,28 @@ def test_check_pcpatch_column_ok(db):
     ''')[0][0]
 
 
+def test_foreign_key_array_ok(db):
+    '''
+    Should check constraints on array elements
+    '''
+    db.execute(add_sensor_group1)
+    assert db.query("""select
+        foreign_key_array(ARRAY[1, 2, 3, 4], 'li3ds.transfo')""")[0][0]
+
+
+def test_foreign_key_array_ko(db):
+    '''
+    Should check constraints on array elements
+    '''
+    db.execute(add_sensor_group1)
+    assert not db.query("""select
+        foreign_key_array(ARRAY[1, 6], 'li3ds.transfo')""")[0][0]
+
+
 def test_check_transfo_exists_constraint_ko(db):
     '''
     Insertion should fail if transformation does not exist
     '''
-    db.execute(transfos_sample)
     # check through constraint
     with pytest.raises(psycopg2.IntegrityError):
         db.execute('''
@@ -185,119 +232,115 @@ def test_check_transfo_exists_constraint_ko(db):
 
 
 def test_check_transfo_exists_constraint_ok(db):
-    db.execute(transfos_sample)
+    db.execute(add_sensor_group1)
     assert db.rowcount('''
         insert into transfo_tree(name, transfos)
         values ('t1', ARRAY[1, 2, 4])''') == 1
 
 
 def test_transfo_tree_nosensor_ok(db):
-    db.execute(transfos_sample)
-    db.execute(add_sensor_group)
+    db.execute(add_sensor_group1)
+    db.execute(add_sensor_group2)
+    db.execute(add_sensor_connection)
     assert db.rowcount('''
         insert into transfo_tree (id, name, sensor, transfos)
         values (1, 't1', NULL, ARRAY[5])''') == 1
 
 
 def test_transfo_tree_sensor_ko(db):
-    '''should fail if it references a sensor and transfos are not connected'''
-    db.execute(transfos_sample)
-    db.execute(add_sensor_group)
+    '''should fail if it references a sensor
+    and transfos are not connected'''
+    db.execute(add_sensor_group1)
+    db.execute(add_sensor_group2)
     with pytest.raises(psycopg2.IntegrityError):
         db.execute('''
         insert into transfo_tree (id, name, sensor, transfos)
         values (1, 't1', 1, ARRAY[1, 5])''') == 1
 
 
-def test_foreign_key_array_ok(db):
-    '''
-    Should check constraints on array elements
-    '''
-    db.execute(transfos_sample)
-    assert db.query("select foreign_key_array(ARRAY[1, 2, 3, 4], 'li3ds.transfo')")[0][0]
-
-
-def test_foreign_key_array_ko(db):
-    '''
-    Should check constraints on array elements
-    '''
-    db.execute(transfos_sample)
-    assert not db.query("select foreign_key_array(ARRAY[1, 6], 'li3ds.transfo')")[0][0]
-
-
 def test_check_istree_ok(db):
-    db.execute(transfos_sample)
+    db.execute(add_sensor_group1)
     assert db.query("select check_istree(ARRAY[1, 2, 5])")[0][0]
 
 
 def test_check_istree_ko_cycle(db):
-    db.execute(transfos_sample)
-    # insert transfo to make a cycle
-    db.execute('''
-        insert into transfo (id, name, source, target)
-        values (5, 't5', 4, 5)
-    ''')
-    assert not db.query("select check_istree(ARRAY[1, 2, 3, 4, 5])")[0][0]
+    db.execute(add_sensor_group1)
+    db.execute(add_reverse_transfo)
+    assert not db.query("select check_istree(ARRAY[1, 2, 3, 4, 9])")[0][0]
 
 
 def test_check_istree_ko_noconnex(db):
-    db.execute(transfos_sample)
-    # insert an isolated graph
-    db.execute("insert into referential (id, name) values (6, 'r6'), (7, 'r7')")
-    db.execute('''
-        insert into transfo (id, name, source, target)
-        values (6, 't6', 6, 7)''')
-    assert not db.query("select check_istree(ARRAY[1, 2, 3, 4, 6])")[0][0]
+    db.execute(add_sensor_group1)
+    db.execute(add_sensor_group2)
+    assert not db.query("select check_istree(ARRAY[1, 7])")[0][0]
 
 
 def test_platform_config_ok(db):
-    db.execute(transfos_sample)
-    db.execute(add_sensor_group)
+    db.execute(add_sensor_group1)
+    db.execute(add_sensor_group2)
     db.execute(add_transfo_trees)
+    db.execute(add_sensor_connection)
     assert db.rowcount(add_platform_config) == 1
 
 
 def test_platform_config_ko(db):
-    db.execute(transfos_sample)
-    db.execute(add_sensor_group)
+    db.execute(add_sensor_group1)
+    db.execute(add_sensor_group2)
     db.execute(add_transfo_trees)
     with pytest.raises(psycopg2.IntegrityError):
-        db.execute('''
-            insert into platform_config (id, name, platform, transfo_trees)
-            values (1, 'p1', 1, ARRAY[1, 2])
-        ''')
-
-
-def test_platform_config_ko2(db):
-    db.execute(transfos_sample)
-    db.execute(add_sensor_group)
-    db.execute(add_transfo_trees)
-    with pytest.raises(psycopg2.IntegrityError):
-        db.execute('''
-            insert into platform_config (id, name, platform, transfo_trees)
-            values (1, 'p1', 1, ARRAY[1, 2, 8])
-        ''')
+        db.execute(add_platform_config)
 
 
 def test_check_transfotree_istree_empty_ok(db):
-    db.execute(transfos_sample)
-    db.execute(add_sensor_group)
+    assert db.query("select check_transfotree_istree(NULL)")[0][0]
+
+
+def test_check_transfotree_istree_connex(db):
+    db.execute(add_sensor_group1)
+    db.execute(add_sensor_group2)
+    db.execute(add_sensor_connection)
     db.execute(add_transfo_trees)
     assert db.query("select check_transfotree_istree(ARRAY[1, 2, 3])")[0][0]
 
 
-def test_check_transfotree_istree_empty_ko(db):
-    db.execute(transfos_sample)
-    db.execute(add_sensor_group)
+def test_check_transfotree_istree_noconnex(db):
+    db.execute(add_sensor_group1)
+    db.execute(add_sensor_group2)
     db.execute(add_transfo_trees)
-    assert not db.query("select check_transfotree_istree(ARRAY[2, 1])")[0][0]
+    assert not db.query("select check_transfotree_istree(ARRAY[1, 2])")[0][0]
+
+
+def test_dijkstra_function(db):
+    db.execute(add_sensor_group1)
+    db.execute(add_sensor_group2)
+    db.execute(add_transfo_trees)
+    db.execute(add_sensor_connection)
+    db.execute(add_platform_config)
+    assert db.query("select dijkstra(1, 1, 2)")[0][0] == [1]
+    assert db.query("select dijkstra(1, 1, 5)")[0][0] == [1, 4]
+    assert db.query("select dijkstra(1, 1, 7)")[0][0] == [1, 4, 5, 6]
+    assert db.query("select dijkstra(1, 3, 8)")[0][0] == []
+    assert db.query("select dijkstra(1, 1, 1)")[0][0] == []
+    assert db.query("select dijkstra(1, 5, 4)")[0][0] == []
+
+
+def test_dijkstra_function_exception(db):
+    db.execute(add_sensor_group1)
+    db.execute(add_sensor_group2)
+    db.execute(add_transfo_trees)
+    db.execute(add_sensor_connection)
+    db.execute(add_platform_config)
+    with pytest.raises(Exception):
+        db.query("select dijkstra(1, 1, 55)")
+    with pytest.raises(Exception):
+        db.query("select dijkstra(1, 55, 1)")
 
 
 # FIXME activate when delete triggers will be ready
 # def test_delete_transfo_cascade(db):
 #     '''deleting a transfo should propagate deletion of related platform_config
 #     and transfo_trees'''
-#     db.execute(transfos_sample)
+#     db.execute(add_sensor_group1)
 #     db.execute(add_sensor_group)
 #     db.execute(add_transfo_trees)
 #     db.execute(add_platform_config)
@@ -310,23 +353,3 @@ def test_check_transfotree_istree_empty_ko(db):
 #         join transfo_tree tt on array[tt.id] <@ pf.transfo_trees
 #         where array[1] <@ tt.transfos
 #         ''') == 0, db.show_table('platform_config')
-
-def test_dijkstra_function(db):
-    db.execute(transfos_sample)
-    db.execute(add_sensor_group)
-    db.execute(add_transfo_trees)
-    db.execute(add_platform_config)
-    assert db.query("select dijkstra(1, 1, 5)")[0][0] == [1, 4, 5]
-    assert db.query("select dijkstra(1, 3, 8)")[0][0] == [3, 4, 5, 8]
-    assert db.query("select dijkstra(1, 1, 1)")[0][0] == [1]
-
-
-def test_dijkstra_function_exception(db):
-    db.execute(transfos_sample)
-    db.execute(add_sensor_group)
-    db.execute(add_transfo_trees)
-    db.execute(add_platform_config)
-    with pytest.raises(Exception):
-        db.query("select dijkstra(1, 1, 55)")
-    with pytest.raises(Exception):
-        db.query("select dijkstra(1, 55, 1)")
