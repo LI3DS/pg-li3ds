@@ -409,11 +409,12 @@ create table platform_config(
     )
 );
 
-create or replace function dijkstra(config integer, source integer, target integer)
+create or replace function dijkstra(config integer, source integer,
+        target integer, stoptosensor varchar default '')
 returns integer[] as
 $CODE$
     import pg_li3ds
-    return pg_li3ds.dijkstra(config, source, target)
+    return pg_li3ds.dijkstra(config, source, target, stoptosensor)
 $CODE$ language plpython2u;
 
 
