@@ -15,7 +15,7 @@
    viewBox="0 0 1488.189 1052.3622"
    id="svg2"
    version="1.1"
-   inkscape:version="0.92.1 r15371"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
    sodipodi:docname="datamodel.svg"
    inkscape:export-filename="/home/ludo/dev/dga-li3ds/datamodel/model.svg.png"
    inkscape:export-xdpi="90"
@@ -946,13 +946,13 @@
      inkscape:pageopacity="1"
      inkscape:pageshadow="2"
      inkscape:zoom="1.0000001"
-     inkscape:cx="1030.7061"
-     inkscape:cy="152.11386"
+     inkscape:cx="827.70612"
+     inkscape:cy="270.11385"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1920"
-     inkscape:window-height="1033"
+     inkscape:window-width="1680"
+     inkscape:window-height="1001"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -2909,23 +2909,5 @@
          x="988.1264"
          id="tspan6019-2-0-3-0-7-8-1-0-3-3-2-2-6"
          sodipodi:role="line">parameters_column</tspan></text>
-    <path
-       style="fill:none;stroke:#888888;stroke-width:0.62649798;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-mid:url(#TriangleOutL-4-9-3-2)"
-       d="m 1050.3143,909.50115 c 22.7836,61.42154 -208.83387,78.94959 -322.80163,82.6245 -108.28861,3.49178 -383.04054,10.38505 -402.47857,-55.73481"
-       id="path4364-8-8-2-8"
-       sodipodi:nodetypes="csc"
-       inkscape:connector-curvature="0" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:15.03595066px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#888888;fill-opacity:1;stroke:none;stroke-width:1.25299597"
-       x="691.3656"
-       y="980.20526"
-       id="text8235-6-66-6-7"
-       transform="matrix(0.95954911,-0.04736285,0.04052197,1.040156,0,0)"><tspan
-         sodipodi:role="line"
-         id="tspan8237-4-7-1-9"
-         x="691.3656"
-         y="980.20526"
-         style="font-size:12.52995968px;line-height:1.25;stroke-width:1.25299597">sensor</tspan></text>
   </g>
 </svg>
