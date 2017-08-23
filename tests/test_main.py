@@ -336,6 +336,25 @@ def test_dijkstra_function_exception(db):
         db.query("select dijkstra(1, 55, 1)")
 
 
+def test_dijkstra_findref(db):
+    db.execute(add_sensor_group1)
+    db.execute(add_sensor_group2)
+    db.execute(add_transfo_trees)
+    db.execute(add_sensor_connection)
+    db.execute(add_platform_config)
+    assert db.query("select dijkstra(1, 1, 8, 'ins')")[0][0] == [6]
+
+
+def test_dijkstra_findref_ko(db):
+    db.execute(add_sensor_group1)
+    db.execute(add_sensor_group2)
+    db.execute(add_transfo_trees)
+    db.execute(add_sensor_connection)
+    db.execute(add_platform_config)
+    with pytest.raises(Exception):
+        db.query("select dijkstra(1, 1, 8, 'lidar')")[0][0]
+
+
 # FIXME activate when delete triggers will be ready
 # def test_delete_transfo_cascade(db):
 #     '''deleting a transfo should propagate deletion of related platform_config

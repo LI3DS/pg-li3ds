@@ -16,7 +16,7 @@ func_names = {
 }
 
 
-def dijkstra(config, source, target):
+def dijkstra(config, source, target, stoptosensor):
     '''
     returns the transfo list needed to go from source referential to target
     referential
@@ -96,6 +96,19 @@ def dijkstra(config, source, target):
                         .format(source, target, config))
             return []
         shortest_path.insert(0, x)
+
+    if stoptosensor:
+        # if a sensor type was requested we want to return
+        # the first referential matching that type
+        for ref in shortest_path:
+            found = plpy.execute("""
+                select r.id, s.type from referential r
+                join sensor s on r.sensor = s.id
+                where r.id = {}""".format(ref))
+            if found[0]['type'] == stoptosensor:
+                return [found[0]['id']]
+        raise Exception(
+            "No referential in path with type {}".format(stoptosensor))
 
     # we have referentials now we need all transformations
     # assembling refs by pair
