@@ -13,11 +13,11 @@ Graph used in tests (nodes are referentials, edges are transformations)
 +-+        +-+        +-+         |
 |4|<---3---|2|---2--->|3|         |  sensor group 1
 +-+        +-+        +-+         |
-            | ↖                   |
-            |  \                  |
-            4   9                 |
-            |  /                  |
-            v /                   |
+          / | ↖                   |
+         /  |  \                  |
+        10  4   9                 |
+         \  |  /                  |
+          ↘ v /                   |
            +++                    /
            |5|                   /
            +++
@@ -66,12 +66,8 @@ add_sensor_group1 = '''
 
     insert into transfo (id, name, source, target)
     values (1, 't1', 1, 2), (2, 't2', 2, 3),
-           (3, 't3', 2, 4), (4, 't4', 2, 5);
-'''
-
-add_reverse_transfo = '''
-    insert into transfo (id, name, source, target)
-    values (9, 't9', 5, 2)
+           (3, 't3', 2, 4), (4, 't4', 2, 5),
+           (9, 't9', 5, 2);
 '''
 
 add_sensor_group2 = '''
@@ -91,20 +87,14 @@ add_sensor_connection = '''
     insert into transfo (id, name, source, target)
     values (5, 't5', 5, 6);
 
-    insert into transfo_tree(id, name, sensor, transfos)
-    values (3, 't3', NULL, ARRAY[5]);
+    insert into transfo_tree(id, name, transfos)
+    values (3, 't3', ARRAY[5]);
 '''
 
 add_transfo_trees = '''
-    insert into transfo_tree(id, name, sensor, transfos)
-    values (1, 't1', 1, ARRAY[1, 2, 3, 4]),
-           (2, 't2', 2, ARRAY[6, 7, 8]);
-'''
-
-add_transfo_trees_ko = '''
-    insert into transfo_tree(id, name, sensor, transfos) values
-        (1, 't1', 1, ARRAY[1, 2, 3, 9]),
-        (2, 't2', 2, ARRAY[6, 7, 8]);
+    insert into transfo_tree(id, name, transfos)
+    values (1, 't1', ARRAY[1, 2, 3, 4]),
+           (2, 't2', ARRAY[6, 7, 8]);
 '''
 
 add_platform_config = '''
@@ -238,15 +228,6 @@ def test_check_transfo_exists_constraint_ok(db):
         values ('t1', ARRAY[1, 2, 4])''') == 1
 
 
-def test_transfo_tree_nosensor_ok(db):
-    db.execute(add_sensor_group1)
-    db.execute(add_sensor_group2)
-    db.execute(add_sensor_connection)
-    assert db.rowcount('''
-        insert into transfo_tree (id, name, sensor, transfos)
-        values (1, 't1', NULL, ARRAY[5])''') == 1
-
-
 def test_transfo_tree_sensor_ko(db):
     '''should fail if it references a sensor
     and transfos are not connected'''
@@ -254,25 +235,33 @@ def test_transfo_tree_sensor_ko(db):
     db.execute(add_sensor_group2)
     with pytest.raises(psycopg2.IntegrityError):
         db.execute('''
-        insert into transfo_tree (id, name, sensor, transfos)
-        values (1, 't1', 1, ARRAY[1, 5])''') == 1
+        insert into transfo_tree (id, name, transfos)
+        values (1, 't1', ARRAY[1, 5])''') == 1
 
 
-def test_check_istree_ok(db):
+def test_isconnected_ok(db):
     db.execute(add_sensor_group1)
-    assert db.query("select check_istree(ARRAY[1, 2, 5])")[0][0]
+    assert db.query("select isconnected(ARRAY[1, 2, 5])")[0][0]
 
 
-def test_check_istree_ko_cycle(db):
+def test_isconnected_with_cycle(db):
     db.execute(add_sensor_group1)
-    db.execute(add_reverse_transfo)
-    assert not db.query("select check_istree(ARRAY[1, 2, 3, 4, 9])")[0][0]
+    assert db.query("select isconnected(ARRAY[1, 2, 3, 4, 9])")[0][0]
 
 
-def test_check_istree_ko_noconnex(db):
+def test_isconnected_but_duplicate_transfo(db):
+    db.execute(add_sensor_group1)
+    db.execute("""
+        insert into transfo (id, name, source, target)
+        values (10, 't1', 2, 5)
+    """)
+    assert not db.query("select isconnected(ARRAY[1, 2, 3, 4, 9, 10])")[0][0]
+
+
+def test_isconnected_ko_noconnex(db):
     db.execute(add_sensor_group1)
     db.execute(add_sensor_group2)
-    assert not db.query("select check_istree(ARRAY[1, 7])")[0][0]
+    assert not db.query("select isconnected(ARRAY[1, 7])")[0][0]
 
 
 def test_platform_config_ok(db):

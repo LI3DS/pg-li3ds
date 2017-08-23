@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from heapq import heappop, heappush
+from collections import defaultdict, deque
+from itertools import chain
 import json
 
 import plpy
@@ -14,6 +16,67 @@ func_names = {
     'spherical_to_cartesian': 'PC_SphericalToCartesian',
     'projective_pinhole': 'PC_ProjectivePinhole',
 }
+
+
+def isconnected(transfos, doubletransfo=False):
+    """
+    Check if transfos list corresponds to a connected graph
+    """
+    success = True
+    edges = {}
+
+    # check connectivity
+    # getting sources and targets for each transformation
+    tlist = ['{},{}'.format(i, r) for i, r in enumerate(transfos)]
+    vals = '({})'.format('),('.join(tlist))
+    rv = plpy.execute(
+        """
+        select id, source, target
+        from (values {}) as v
+        join li3ds.transfo t on v.column2 = t.id
+        order by v.column1
+        """.format(vals)
+    )
+    transfoset = set([(r['source'], r['target']) for r in rv])
+    if not doubletransfo and len(transfoset) != len(rv):
+        # multiple edges between source and target
+        return False
+
+    # fill the edges for later use
+    for tra in rv:
+        edges[tra['id']] = (tra['source'], tra['target'])
+
+    # check connexity
+    neighbors = defaultdict(set)
+    # store referentials (nodes)
+    nodes = set(chain.from_iterable(edges.values()))
+
+    for tra, refs in edges.items():
+        neighbors[refs[0]].update({refs[1]})
+        neighbors[refs[1]].update({refs[0]})
+
+    visited_nodes = {}
+    start_node = list(nodes)[0]
+    queue = deque()
+    queue.append(start_node)
+    visited_nodes[start_node] = True
+
+    while queue:
+        node = queue.popleft()
+        for child in neighbors[node]:
+            if child not in visited_nodes:
+                visited_nodes[child] = True
+                queue.append(child)
+
+    diff = len(visited_nodes) - len(nodes)
+    if diff:
+        success = False
+        plpy.warning(
+            'disconnected graph, visited nodes {}, total {}'
+            .format(len(visited_nodes), len(nodes))
+        )
+
+    return success
 
 
 def dijkstra(config, source, target, stoptosensor):
