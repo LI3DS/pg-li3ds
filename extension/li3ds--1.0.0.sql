@@ -256,72 +256,12 @@ create table transfo(
 );
 
 /*
--- check that treeview is a spanning tree
--- * acyclic graph = n vertex, n-1 edges
--- * connex
+-- check the connectivity of the graph
 */
-create or replace function check_istree(transfos integer[])
+create or replace function isconnected(transfos integer[], doubletransfo boolean default False)
 returns boolean as $CODE$
-    from collections import defaultdict, deque
-    from itertools import chain
-    import json
-
-    success = True
-    edges = {}
-
-    # check connectivity
-    # don't need sign
-    # getting sources and targets for each transformation
-    vals = '('+'),('.join([str(i)+','+str(r) for i, r in enumerate(transfos)])+')'
-    rv = plpy.execute(
-        """
-        select id, source, target
-        from (values {}) as v
-        join li3ds.transfo t on v.column2 = t.id
-        order by v.column1
-        """.format(vals)
-    )
-    # fill the edges for later use
-    for tra in rv:
-        edges[tra['id']] = (tra['source'], tra['target'])
-
-    # check connexity
-    neighbors = defaultdict(set)
-    # store referentials (nodes)
-    nodes = set(chain.from_iterable(edges.values()))
-
-    # graph must be acyclic
-    if len(edges) >= len(nodes):
-        plpy.warning('circular graph nodes: {}, egdes: {}'
-                     .format(len(nodes), len(edges)))
-        success = False
-
-    for tra, refs in edges.items():
-        neighbors[refs[0]].update({refs[1]})
-        neighbors[refs[1]].update({refs[0]})
-
-    visited_nodes = {}
-    start_node = list(nodes)[0]
-    queue = deque()
-    queue.append(start_node)
-    visited_nodes[start_node] = True
-
-    while queue:
-        node = queue.popleft()
-        for child in neighbors[node]:
-            if child not in visited_nodes:
-                visited_nodes[child] = True
-                queue.append(child)
-
-    diff = len(visited_nodes) - len(nodes)
-    if diff:
-        success = False
-        plpy.warning(
-            'disconnected graph, visited nodes {}, total {}'
-            .format(len(visited_nodes), len(nodes))
-        )
-
-    return success
+    import pg_li3ds
+    return pg_li3ds.isconnected(transfos, doubletransfo)
 $CODE$ language plpython2u;
 
 /*
@@ -349,7 +289,7 @@ begin
         raise notice 'no transfo_given';
         return true;
     end if;
-    select li3ds.check_istree(array_aggmult(transfos)) into res
+    select li3ds.isconnected(array_aggmult(transfos)) into res
     from li3ds.transfo_tree where id = ANY($1);
     return res;
 end;
@@ -388,11 +328,10 @@ create table transfo_tree(
     , name varchar not null
     , description varchar
     , owner varchar
-    , sensor integer references sensor(id)
     , transfos integer[]
 	check (
         foreign_key_array(transfos, 'li3ds.transfo')
-        and (sensor is NULL or check_istree(transfos))
+        and (isconnected(transfos))
     )
 );
 
