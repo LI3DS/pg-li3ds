@@ -236,7 +236,7 @@ def get_dyn_transfo_params(params_column, params, time):
     plpy.debug(q)
     rv = plpy.execute(q)
     if len(rv) == 0:
-        plpy.warning('no parameters for the provided time')
+        plpy.warning('no parameters for the provided time ({:f})'.format(time))
         return None
     if len(rv) != 1:
         plpy.error('multiple rows returned from time interpolation')
