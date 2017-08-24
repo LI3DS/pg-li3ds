@@ -79,7 +79,7 @@ def isconnected(transfos, doubletransfo=False):
     return success
 
 
-def dijkstra(config, source, target, stoptosensor):
+def dijkstra(config, source, target, stoptosensor=''):
     '''
     returns the transfo list needed to go from source referential to target
     referential
