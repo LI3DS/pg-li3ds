@@ -95,6 +95,8 @@ def dijkstra(config, source, target, stoptosensor=''):
         """.format(config)
     )[0]['trf']
 
+    transfo_list_coma_separated = ','.join(map(str, transfo_list))
+
     # list of adjacent nodes (referentials)
     # adj_list = [ref1: [ref7, ref1], ref2: [ref3]...]
     result = plpy.execute(
@@ -111,7 +113,7 @@ def dijkstra(config, source, target, stoptosensor=''):
             on t.source = r.id
             and array[t.id] <@ array[{}]
         group by r.id
-        """.format(','.join(map(str, transfo_list)))
+        """.format(transfo_list_coma_separated)
     )
     # build graph
     # graph = {ref1: [(1, ref7), (1, ref3)...], ...}
@@ -186,7 +188,8 @@ def dijkstra(config, source, target, stoptosensor=''):
             select id
             from li3ds.transfo
             where source = {} and target = {}
-            """.format(ref_source, ref_target))[0]['id'])
+            and array[id] <@ array[{}]
+            """.format(ref_source, ref_target, transfo_list_coma_separated))[0]['id'])
 
     return transfos
 
