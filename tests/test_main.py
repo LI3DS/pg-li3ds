@@ -83,6 +83,12 @@ add_sensor_group2 = '''
            (7, 't7', 6, 8), (8, 't8', 6, 9);
 '''
 
+add_other_transfos_for_sensor_group2 = '''
+    insert into transfo(id, name, source, target)
+    values (11, 't11', 6, 7),
+           (12, 't12', 6, 8), (13, 't13', 6, 9);
+'''
+
 add_sensor_connection = '''
     insert into transfo (id, name, source, target)
     values (5, 't5', 5, 6);
@@ -97,11 +103,21 @@ add_transfo_trees = '''
            (2, 't2', ARRAY[6, 7, 8]);
 '''
 
+add_another_transfo_tree_for_sensor_group2 = '''
+    insert into transfo_tree(id, name, transfos)
+    values (4, 't4', ARRAY[11, 12, 13]);
+'''
+
 add_platform_config = '''
     insert into platform (id, name) values (1, 'platform');
 
     insert into platform_config (id, name, platform, transfo_trees)
     values (1, 'p1', 1, ARRAY[1, 2, 3])
+'''
+
+add_another_platform_config = '''
+    insert into platform_config(id, name, platform, transfo_trees)
+    values (2, 'p2', 1, ARRAY[1, 3, 4])
 '''
 
 create_test_schema = '''
@@ -311,6 +327,23 @@ def test_dijkstra_function(db):
     assert db.query("select dijkstra(1, 3, 8)")[0][0] == []
     assert db.query("select dijkstra(1, 1, 1)")[0][0] == []
     assert db.query("select dijkstra(1, 5, 4)")[0][0] == []
+
+
+def test_dijkstra_function_with_two_platform_configs(db):
+    db.execute(add_sensor_group1)
+    db.execute(add_sensor_group2)
+    db.execute(add_other_transfos_for_sensor_group2)
+    db.execute(add_transfo_trees)
+    db.execute(add_sensor_connection)
+    db.execute(add_another_transfo_tree_for_sensor_group2)
+    db.execute(add_platform_config)
+    db.execute(add_another_platform_config)
+    assert db.query("select dijkstra(2, 1, 2)")[0][0] == [1]
+    assert db.query("select dijkstra(2, 1, 5)")[0][0] == [1, 4]
+    assert db.query("select dijkstra(2, 1, 7)")[0][0] == [1, 4, 5, 11]
+    assert db.query("select dijkstra(2, 3, 8)")[0][0] == []
+    assert db.query("select dijkstra(2, 1, 1)")[0][0] == []
+    assert db.query("select dijkstra(2, 5, 4)")[0][0] == []
 
 
 def test_dijkstra_function_exception(db):
