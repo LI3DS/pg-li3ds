@@ -232,8 +232,8 @@ def get_dyn_transfo_params(params_column, params, time):
         with patch as (
             select pc_interpolate({column}, 'time', {time:f}, true) point
             from {schema}.{table}
-            where pc_patchmin({column}, 'time') < {time:f} and
-                  pc_patchmax({column}, 'time') > {time:f}
+            where pc_patchmin({column}, 'time') <= {time:f} and
+                  pc_patchmax({column}, 'time') >  {time:f}
         ) select %s from patch
         ''' % select).format(schema=schema, table=table, column=column, time=time)
     plpy.debug(q)
