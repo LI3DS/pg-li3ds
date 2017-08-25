@@ -321,12 +321,14 @@ def _transform(obj, type_, func_name, func_sign, params):
     args = [params[p] for p in func_sign if p != '_time']
     args_str, args_val = args_to_array_string(args)
     q = 'select {}(\'{}\'::{}{}) r'.format(func_name, obj, type_, args_str)
-    plpy.debug(q)
+    plpy.debug(q, args_val)
     plan = plpy.prepare(q, ['numeric'] * len(args_val))
     rv = plpy.execute(plan, args_val)
     if len(rv) != 1:
-        plpy.error('unexpected returned value from {}'.format(q))
-    result = rv[0]['r']
+        plpy.error('unexpected number of rows ({}) returned from {}'.format(len(rv), q))
+    result = rv[0].get('r')
+    if result is None:
+        plpy.error('unexpected value None returned from {}'.format(q))
     return result
 
 
