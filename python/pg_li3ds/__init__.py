@@ -321,12 +321,14 @@ def _transform(obj, type_, func_name, func_sign, params):
     args = [params[p] for p in func_sign if p != '_time']
     args_str, args_val = args_to_array_string(args)
     q = 'select {}(\'{}\'::{}{}) r'.format(func_name, obj, type_, args_str)
-    plpy.debug(q)
+    plpy.debug(q, args_val)
     plan = plpy.prepare(q, ['numeric'] * len(args_val))
     rv = plpy.execute(plan, args_val)
     if len(rv) != 1:
-        plpy.error('unexpected returned value from {}'.format(q))
-    result = rv[0]['r']
+        plpy.error('unexpected number of rows ({}) returned from {}'.format(len(rv), q))
+    result = rv[0].get('r')
+    if result is None:
+        plpy.error('unexpected value None returned from {}'.format(q))
     return result
 
 
@@ -360,6 +362,42 @@ def transform_box4d_config(box4d, config, source, target, time):
     '''
     transforms = dijkstra(config, source, target)
     return transform_box4d_list(box4d, transforms, time)
+
+
+def _transform_point(point, func_name, func_sign, params):
+    ''' Transform the point, using func_name, func_sign and params.
+    '''
+    point_str = ' '.join(map(str, point))
+    box4d = 'BOX4D({point_str},{point_str})'.format(point_str=point_str)
+    box4d_out = _transform_box4d(box4d, func_name, func_sign, params)
+    point_out = list(map(float, box4d_out[6:-1].split(',')[0].split(' ')))
+    return point_out
+
+
+def transform_point_one(point, transfoid, time):
+    ''' Transform the point, using transfoid and time. time is ignored if the transform
+        is static.
+    '''
+    transfo = get_transform(transfoid, time)
+    if not transfo:
+        return None
+    name, params, func_name, func_sign = transfo
+    plpy.log('apply transfo "{}" (function: "{}") to point'.format(name, func_name))
+    return _transform_point(point, func_name, func_sign, params)
+
+
+def transform_point_list(point, transfoids, time):
+    ''' Transform the point, using all the transforms in the transfoids list. '''
+    for transfoid in transfoids:
+        point = transform_point_one(point, transfoid, time)
+    return point
+
+
+def transform_point_config(point, config, source, target, time):
+    ''' Apply the transform path from "source" to "target" for the provided "config".
+    '''
+    transforms = dijkstra(config, source, target)
+    return transform_point_list(point, transforms, time)
 
 
 def _transform_patch(patch, func_name, func_sign, params):

@@ -389,6 +389,34 @@ $CODE$
     return pg_li3ds.transform_box4d_config(box4d, config, source, target, ttime)
 $CODE$ language plpython2u;
 
+create or replace function transform(point float8[3], transfo integer, ttime float8 default 0.0)
+returns float8[3] as
+$CODE$
+    import pg_li3ds
+    return pg_li3ds.transform_point_one(point, transfo, ttime)
+$CODE$ language plpython2u;
+
+create or replace function transform(point float8[3], transfo integer, ttime float8 default 0.0)
+returns float8[3] as
+$CODE$
+    import pg_li3ds
+    return pg_li3ds.transform_point_one(point, transfo, ttime)
+$CODE$ language plpython2u;
+
+create or replace function transform(point float8[3], transfos integer[], ttime float8 default 0.0)
+returns float8[3] as
+$CODE$
+    import pg_li3ds
+    return pg_li3ds.transform_point_list(point, transfos, ttime)
+$CODE$ language plpython2u;
+
+create or replace function transform(point float8[3], config integer, source integer, target integer, ttime float8 default 0.0)
+returns float8[3] as
+$CODE$
+    import pg_li3ds
+    return pg_li3ds.transform_point_config(point, config, source, target, ttime)
+$CODE$ language plpython2u;
+
 create or replace function transform(patch pcpatch, func_name text, func_sign text[], params text)
 returns libox4d as
 $CODE$
