@@ -13,6 +13,7 @@ __version__ = '0.1.dev0'
 func_names = {
     'affine_mat4x3': 'PC_Affine',
     'affine_quat': 'PC_Affine',
+    'affine_quat_inverse': 'PC_AffineInverse',
     'spherical_to_cartesian': 'PC_SphericalToCartesian',
     'projective_pinhole': 'PC_ProjectivePinhole',
     'projective_pinhole_inverse': 'PC_ProjectivePinholeInverse',
@@ -195,22 +196,10 @@ def dijkstra(config, source, target, stoptosensor=''):
     return transfos
 
 
-def dim_name(dim):
-    ''' Return the dimension sign and name. '-' is returned when dim is negative and ''
-        when dim is positive.
-    '''
-    neg = ''
-    if dim[0] == '-':
-        neg = '-'
-        dim = dim[1:]
-    return neg, dim
-
-
 def append_dim_select(dim, select):
     ''' Append the PC_Get fonction call string for "dim" to "select".
     '''
-    neg, dim = dim_name(dim)
-    select.append('{}PC_Get(point, \'{}\') {}'.format(neg, dim, plpy.quote_ident(dim)))
+    select.append('PC_Get(point, \'{}\') {}'.format(dim, plpy.quote_ident(dim)))
 
 
 def get_dyn_transfo_params(params_column, params, time):
@@ -249,11 +238,11 @@ def get_dyn_transfo_params(params_column, params, time):
     for key, param in params.items():
         if isinstance(param, list):
             for i, dim in enumerate(param):
-                val = values[dim_name(dim)[1]]
+                val = values[dim]
                 param[i] = val
         else:
             dim = param
-            val = values[dim_name(dim)[1]]
+            val = values[dim]
             params[key] = val
 
     return params
