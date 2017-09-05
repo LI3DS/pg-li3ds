@@ -15,6 +15,7 @@ func_names = {
     'affine_quat': 'PC_Affine',
     'spherical_to_cartesian': 'PC_SphericalToCartesian',
     'projective_pinhole': 'PC_ProjectivePinhole',
+    'projective_pinhole_inverse': 'PC_ProjectivePinholeInverse',
 }
 
 
