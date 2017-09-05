@@ -344,6 +344,8 @@ def transform_box4d_list(box4d, transfoids, time):
     ''' Transform the box4d, using all the transforms in the transfoids list. '''
     for transfoid in transfoids:
         box4d = transform_box4d_one(box4d, transfoid, time)
+        if not box4d:
+            break
     return box4d
 
 
@@ -380,6 +382,8 @@ def transform_point_list(point, transfoids, time):
     ''' Transform the point, using all the transforms in the transfoids list. '''
     for transfoid in transfoids:
         point = transform_point_one(point, transfoid, time)
+        if not point:
+            break
     return point
 
 
@@ -412,6 +416,8 @@ def transform_patch_list(patch, transfoids, time):
     ''' Transform the patch, using all the transforms in the transfoids list. '''
     for transfoid in transfoids:
         patch = transform_patch_one(patch, transfoid, time)
+        if not patch:
+            break
     return patch
 
 
