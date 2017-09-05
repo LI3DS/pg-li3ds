@@ -13,6 +13,7 @@ __version__ = '0.1.dev0'
 func_names = {
     'affine_mat4x3': 'PC_Affine',
     'affine_quat': 'PC_Affine',
+    'affine_quat_inverse': 'PC_AffineInverse',
     'spherical_to_cartesian': 'PC_SphericalToCartesian',
     'projective_pinhole': 'PC_ProjectivePinhole',
     'projective_pinhole_inverse': 'PC_ProjectivePinholeInverse',
