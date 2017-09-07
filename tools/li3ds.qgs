@@ -11,13 +11,13 @@
     <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="trajectory_tangents_083822_view20170906181621030" source="host=localhost port=5440 sslmode=disable key='id' srid=2154 type=LineString table=&quot;li3ds&quot;.&quot;trajectory_tangents_083822_view&quot; (line) sql=" name="trajectoire n°2 (tangentes)">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="LANDINS_20170516_083822_PP_view20170906183235963" source="host=localhost port=5440 sslmode=disable key='id' srid=2154 type=Polygon table=&quot;public&quot;.&quot;LANDINS_20170516_083822_PP_view&quot; (points) sql=" name="trajectoire n°2 (boîtes)">
+    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="LANDINS_20170516_083822_PP_view20170906183235963" source="host=localhost port=5440 sslmode=disable key='id' srid=2154 type=Polygon table=&quot;li3ds&quot;.&quot;LANDINS_20170516_083822_PP_view&quot; (points) sql=" name="trajectoire n°2 (boîtes)">
       <customproperties/>
     </layer-tree-layer>
     <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="trajectory_tangents_075157_view20170906181622728" source="host=localhost port=5440 sslmode=disable key='id' srid=2154 type=LineString table=&quot;li3ds&quot;.&quot;trajectory_tangents_075157_view&quot; (line) sql=" name="trajectoire n°1 (tangentes)">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="LANDINS_20170516_075157_PP_view20170906183157272" source="host=localhost port=5440 sslmode=disable key='id' srid=2154 type=Polygon table=&quot;public&quot;.&quot;LANDINS_20170516_075157_PP_view&quot; (points) sql=" name="trajectoire n°1 (boîtes)">
+    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="LANDINS_20170516_075157_PP_view20170906183157272" source="host=localhost port=5440 sslmode=disable key='id' srid=2154 type=Polygon table=&quot;li3ds&quot;.&quot;LANDINS_20170516_075157_PP_view&quot; (points) sql=" name="trajectoire n°1 (boîtes)">
       <customproperties/>
     </layer-tree-layer>
     <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="laser_points_view20170907102906777" source="host=localhost port=5440 sslmode=disable key='point_id' srid=2154 type=PointZM table=&quot;li3ds&quot;.&quot;laser_points_view&quot; (points) sql=" name="points laser (trajectoire n°1)">
@@ -113,7 +113,7 @@
   <projectlayers>
     <maplayer simplifyAlgorithm="0" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>LANDINS_20170516_075157_PP_view20170906183157272</id>
-      <datasource>host=localhost port=5440 sslmode=disable key='id' srid=2154 type=Polygon table="public"."LANDINS_20170516_075157_PP_view" (points) sql=</datasource>
+      <datasource>host=localhost port=5440 sslmode=disable key='id' srid=2154 type=Polygon table="li3ds"."LANDINS_20170516_075157_PP_view" (points) sql=</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -219,7 +219,7 @@
     </maplayer>
     <maplayer simplifyAlgorithm="0" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>LANDINS_20170516_083822_PP_view20170906183235963</id>
-      <datasource>host=localhost port=5440 sslmode=disable key='id' srid=2154 type=Polygon table="public"."LANDINS_20170516_083822_PP_view" (points) sql=</datasource>
+      <datasource>host=localhost port=5440 sslmode=disable key='id' srid=2154 type=Polygon table="li3ds"."LANDINS_20170516_083822_PP_view" (points) sql=</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -806,7 +806,7 @@
       <layerTransparency>0</layerTransparency>
       <displayfield>&lt;h4>camera: [% "name" %]&lt;/h4>
 &lt;h4>date capture : [% "capture_start" %]&lt;/h4>
-&lt;a href="http://api.li3ds.io[% "uri" %]"> 
+&lt;a href="http://api.li3ds.io[% "uri" %]">
 &lt;img src="http://api.li3ds.io[% "uri" %]" alt="Camera view" style="width:304px;height:228px;">
 &lt;/a></displayfield>
       <label>0</label>
