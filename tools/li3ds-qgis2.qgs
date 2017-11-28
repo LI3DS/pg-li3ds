@@ -5,22 +5,22 @@
   <evaluateDefaultValues active="0"/>
   <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="">
     <customproperties/>
-    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="LANDINS_20170516_075157_PP_view20170906183157272" source="host=localhost port=5440 sslmode=disable key='id' srid=2154 type=Polygon table=&quot;li3ds&quot;.&quot;LANDINS_20170516_075157_PP_view&quot; (points) sql=" name="trajectoire n°1 (boîtes)">
+    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="laser_points_view20170907102906777" source="host=localhost port=5440 sslmode=disable key='point_id' srid=2154 type=PointZM table=&quot;li3ds&quot;.&quot;laser_points_view&quot; (points) sql=" name="points laser (trajectoire n°1)">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="trajectory_tangents_075157_view20170906181622728" source="host=localhost port=5440 sslmode=disable key='id' srid=2154 type=LineString table=&quot;li3ds&quot;.&quot;trajectory_tangents_075157_view&quot; (line) sql=" name="trajectoire n°1 (tangentes)">
-      <customproperties/>
-    </layer-tree-layer>
-    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="LANDINS_20170516_083822_PP_view20170906183235963" source="host=localhost port=5440 sslmode=disable key='id' srid=2154 type=Polygon table=&quot;li3ds&quot;.&quot;LANDINS_20170516_083822_PP_view&quot; (points) sql=" name="trajectoire n°2 (boîtes)">
+    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="images_fontaine_aux_lions_view20170906144230859" source="dbname='li3ds' host=localhost port=5440 sslmode=disable key='id' srid=2154 type=LineString table=&quot;li3ds&quot;.&quot;images_fontaine_aux_lions_view&quot; (line) sql=" name="prises de vue &quot;Fontaine aux Lions&quot;">
       <customproperties/>
     </layer-tree-layer>
     <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="trajectory_tangents_083822_view20170906181621030" source="host=localhost port=5440 sslmode=disable key='id' srid=2154 type=LineString table=&quot;li3ds&quot;.&quot;trajectory_tangents_083822_view&quot; (line) sql=" name="trajectoire n°2 (tangentes)">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="images_fontaine_aux_lions_view20170906144230859" source="dbname='li3ds' host=localhost port=5440 sslmode=disable key='id' srid=2154 type=LineString table=&quot;li3ds&quot;.&quot;images_fontaine_aux_lions_view&quot; (line) sql=" name="prises de vue &quot;Fontaine aux Lions&quot;">
+    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="LANDINS_20170516_083822_PP_view20170906183235963" source="host=localhost port=5440 sslmode=disable key='id' srid=2154 type=Polygon table=&quot;li3ds&quot;.&quot;LANDINS_20170516_083822_PP_view&quot; (points) sql=" name="trajectoire n°2 (boîtes)">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="laser_points_view20170907102906777" source="host=localhost port=5440 sslmode=disable key='point_id' srid=2154 type=PointZM table=&quot;li3ds&quot;.&quot;laser_points_view&quot; (points) sql=" name="points laser (trajectoire n°1)">
+    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="trajectory_tangents_075157_view20170906181622728" source="host=localhost port=5440 sslmode=disable key='id' srid=2154 type=LineString table=&quot;li3ds&quot;.&quot;trajectory_tangents_075157_view&quot; (line) sql=" name="trajectoire n°1 (tangentes)">
+      <customproperties/>
+    </layer-tree-layer>
+    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="LANDINS_20170516_075157_PP_view20170906183157272" source="host=localhost port=5440 sslmode=disable key='id' srid=2154 type=Polygon table=&quot;li3ds&quot;.&quot;LANDINS_20170516_075157_PP_view&quot; (points) sql=" name="trajectoire n°1 (boîtes)">
       <customproperties/>
     </layer-tree-layer>
     <layer-tree-layer expanded="1" providerKey="" checked="Qt::Checked" id="OSM_Standard20170906144826123" source="/home/elemoine/src/pg-li3ds/tools" name="fond OpenStreetMap">
@@ -31,10 +31,10 @@
   <mapcanvas>
     <units>meters</units>
     <extent>
-      <xmin>655413.69109642645344138</xmin>
-      <ymin>6865648.32314998935908079</ymin>
-      <xmax>655479.09648832818493247</xmax>
-      <ymax>6865723.12021965812891722</ymax>
+      <xmin>655385.19226547272410244</xmin>
+      <ymin>6865611.99541095551103354</ymin>
+      <xmax>655516.00304927618708462</xmax>
+      <ymax>6865761.58955029305070639</ymax>
     </extent>
     <rotation>0</rotation>
     <projections>1</projections>
@@ -74,19 +74,14 @@
     </custom-order>
   </layer-tree-canvas>
   <legend updateDrawingOrder="true">
-    <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="trajectoire n°1 (boîtes)" showFeatureCount="0">
+    <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="points laser (trajectoire n°1)" showFeatureCount="0">
       <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="LANDINS_20170516_075157_PP_view20170906183157272" visible="0"/>
+        <legendlayerfile isInOverview="0" layerid="laser_points_view20170907102906777" visible="0"/>
       </filegroup>
     </legendlayer>
-    <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="trajectoire n°1 (tangentes)" showFeatureCount="0">
+    <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="prises de vue &quot;Fontaine aux Lions&quot;" showFeatureCount="0">
       <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="trajectory_tangents_075157_view20170906181622728" visible="0"/>
-      </filegroup>
-    </legendlayer>
-    <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="trajectoire n°2 (boîtes)" showFeatureCount="0">
-      <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="LANDINS_20170516_083822_PP_view20170906183235963" visible="0"/>
+        <legendlayerfile isInOverview="0" layerid="images_fontaine_aux_lions_view20170906144230859" visible="0"/>
       </filegroup>
     </legendlayer>
     <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="trajectoire n°2 (tangentes)" showFeatureCount="0">
@@ -94,14 +89,19 @@
         <legendlayerfile isInOverview="0" layerid="trajectory_tangents_083822_view20170906181621030" visible="0"/>
       </filegroup>
     </legendlayer>
-    <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="prises de vue &quot;Fontaine aux Lions&quot;" showFeatureCount="0">
+    <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="trajectoire n°2 (boîtes)" showFeatureCount="0">
       <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="images_fontaine_aux_lions_view20170906144230859" visible="1"/>
+        <legendlayerfile isInOverview="0" layerid="LANDINS_20170516_083822_PP_view20170906183235963" visible="0"/>
       </filegroup>
     </legendlayer>
-    <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="points laser (trajectoire n°1)" showFeatureCount="0">
+    <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="trajectoire n°1 (tangentes)" showFeatureCount="0">
       <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="laser_points_view20170907102906777" visible="0"/>
+        <legendlayerfile isInOverview="0" layerid="trajectory_tangents_075157_view20170906181622728" visible="0"/>
+      </filegroup>
+    </legendlayer>
+    <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="trajectoire n°1 (boîtes)" showFeatureCount="0">
+      <filegroup open="true" hidden="false">
+        <legendlayerfile isInOverview="0" layerid="LANDINS_20170516_075157_PP_view20170906183157272" visible="0"/>
       </filegroup>
     </legendlayer>
     <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="fond OpenStreetMap" showFeatureCount="0">
