@@ -3,6 +3,7 @@ from heapq import heappop, heappush
 from collections import defaultdict, deque
 from itertools import chain
 import json
+import bisect
 
 import plpy
 
@@ -202,7 +203,7 @@ def append_dim_select(dim, select):
     select.append('PC_Get(point, \'{}\') {}'.format(dim, plpy.quote_ident(dim)))
 
 
-def get_dyn_transfo_params(params_column, params, time):
+def get_dyn_transfo_params_form_1(params_column, params, time):
     ''' Return the dynamic transfo parameters.
     '''
     schema, table, column = tuple(map(plpy.quote_ident, params_column.split('.')))
@@ -248,6 +249,18 @@ def get_dyn_transfo_params(params_column, params, time):
     return params
 
 
+def get_dyn_transfo_params_form_2(params, time):
+    ''' Return the dynamic transfo parameters.
+    '''
+    _times = [p['_time'] for p in params]
+    # find leftmost value greather than or equal to time
+    i = bisect.bisect_left(_times, time)
+    if i == len(_times) or (i == 0 and time < _times[0]):
+        plpy.warning('no parameters for the provided time ({:f})'.format(time))
+        return None
+    return params[i]
+
+
 def get_transform(transfoid, time):
     ''' Return information about the transfo whose id is transfoid. A dict with keys "name",
         "params", "func_name", and "func_sign".
@@ -268,14 +281,23 @@ def get_transform(transfoid, time):
     params_column = transfo['params_column']
     params = json.loads(transfo['params'])
     if params_column:
-        # dynamic transfo
+        # dynamic transform form 1
         if not time:
-            plpy.error('no time value provided for dynamic transfo "{}"'.format(transfo['name']))
-        params = get_dyn_transfo_params(params_column, params, time)
-        if params is None:
-            return None
+            plpy.error('no time value provided for dynamic transfo "{}"'
+                       .format(transfo['name']))
+        params = get_dyn_transfo_params_form_1(params_column, params, time)
     elif params:
-        params = params[0]  # assume the transform is static
+        if len(params) > 1:
+            # dynamic tranform form 2
+            if not time:
+                plpy.error('no time value provided for dynamic transfo "{}"'
+                           .format(transfo['name']))
+            params = get_dyn_transfo_params_form_2(params, time)
+        else:
+            # static transform
+            params = params[0]
+    if params is None:
+        return None
     return transfo['name'], params, transfo['func_name'], transfo['func_sign']
 
 
