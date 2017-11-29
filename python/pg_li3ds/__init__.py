@@ -4,6 +4,8 @@ from collections import defaultdict, deque
 from itertools import chain
 import json
 import bisect
+import datetime
+import dateutil.parser
 
 import plpy
 
@@ -206,6 +208,9 @@ def append_dim_select(dim, select):
 def get_dyn_transfo_params_form_1(params_column, params, time):
     ''' Return the dynamic transfo parameters.
     '''
+    if isinstance(time, datetime.datetime):
+        plpy.error('times as strings unsupported for dynamic transforms of form 1')
+
     schema, table, column = tuple(map(plpy.quote_ident, params_column.split('.')))
     params = params[0]
 
@@ -252,11 +257,14 @@ def get_dyn_transfo_params_form_1(params_column, params, time):
 def get_dyn_transfo_params_form_2(params, time):
     ''' Return the dynamic transfo parameters.
     '''
-    _times = [p['_time'] for p in params]
+    _times = (p['_time'] for p in params)
+    if isinstance(time, datetime.datetime):
+        _times = map(dateutil.parser.parse, _times)
+    _times = list(_times)
     # find leftmost value greather than or equal to time
     i = bisect.bisect_left(_times, time)
     if i == len(_times) or (i == 0 and time < _times[0]):
-        plpy.warning('no parameters for the provided time ({:f})'.format(time))
+        plpy.warning('no parameters for the provided time ({})'.format(time.isoformat()))
         return None
     return params[i]
 
@@ -265,6 +273,11 @@ def get_transform(transfoid, time):
     ''' Return information about the transfo whose id is transfoid. A dict with keys "name",
         "params", "func_name", and "func_sign".
     '''
+    if not isinstance(time, (float, str)):
+        plpy.error('unexpected type for "time" parameter ({})'.format(type(time)))
+    if isinstance(time, str):
+        # if time is a string parse it to a datetime object
+        time = dateutil.parser.parse(time)
     q = '''
         select t.name as name,
                t.parameters_column as params_column, t.parameters as params,
