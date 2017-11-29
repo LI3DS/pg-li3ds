@@ -113,7 +113,7 @@ def dijkstra(config, source, target, stoptosensor=''):
         left join li3ds.transfo t
             -- we only keep direct transformations
             on t.source = r.id
-            and array[t.id] <@ array[{}]
+            and array[t.id] <@ array[{}]::integer[]
         group by r.id
         """.format(transfo_list_coma_separated)
     )
@@ -190,7 +190,7 @@ def dijkstra(config, source, target, stoptosensor=''):
             select id
             from li3ds.transfo
             where source = {} and target = {}
-            and array[id] <@ array[{}]
+            and array[id] <@ array[{}]::integer[]
             """.format(ref_source, ref_target, transfo_list_coma_separated))[0]['id'])
 
     return transfos
