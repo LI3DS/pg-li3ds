@@ -5,6 +5,10 @@ from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
 
+requirements = (
+    'python-dateutil==2.6.0',
+)
+
 
 def find_version(*file_paths):
     """
@@ -37,6 +41,6 @@ setup(
         'Programming Language :: Python :: 2.7',
     ],
     packages=find_packages(),
-    install_requires=(),
+    install_requires=requirements,
     include_package_data=True
 )
