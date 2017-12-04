@@ -329,7 +329,7 @@ def args_to_array_string(args):
             args_val.extend(arg)
             idx += len(arg)
         else:
-            args_str += '$1'
+            args_str += '${}'.format(idx)
             args_val.append(arg)
             idx += 1
     return args_str, args_val
