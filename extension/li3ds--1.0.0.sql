@@ -375,7 +375,7 @@ $CODE$
     return pg_li3ds.transform_box4d_one(box4d, transfo, ttime)
 $CODE$ language plpython2u;
 
-create or replace function transform(box4d libox4d, transfo integer, ttime text default '')
+create or replace function transform(box4d libox4d, transfo integer, ttime text)
 returns libox4d as
 $CODE$
     import pg_li3ds
@@ -389,7 +389,7 @@ $CODE$
     return pg_li3ds.transform_box4d_list(box4d, transfos, ttime)
 $CODE$ language plpython2u;
 
-create or replace function transform(box4d libox4d, transfos integer[], ttime text default '')
+create or replace function transform(box4d libox4d, transfos integer[], ttime text)
 returns libox4d as
 $CODE$
     import pg_li3ds
@@ -403,7 +403,7 @@ $CODE$
     return pg_li3ds.transform_box4d_config(box4d, config, source, target, ttime)
 $CODE$ language plpython2u;
 
-create or replace function transform(box4d libox4d, config integer, source integer, target integer, ttime text default '')
+create or replace function transform(box4d libox4d, config integer, source integer, target integer, ttime text)
 returns libox4d as
 $CODE$
     import pg_li3ds
@@ -417,7 +417,7 @@ $CODE$
     return pg_li3ds.transform_point_one(point, transfo, ttime)
 $CODE$ language plpython2u;
 
-create or replace function transform(point float8[3], transfo integer, ttime text default '')
+create or replace function transform(point float8[3], transfo integer, ttime text)
 returns float8[3] as
 $CODE$
     import pg_li3ds
@@ -431,7 +431,7 @@ $CODE$
     return pg_li3ds.transform_point_one(point, transfo, ttime)
 $CODE$ language plpython2u;
 
-create or replace function transform(point float8[3], transfo integer, ttime text default '')
+create or replace function transform(point float8[3], transfo integer, ttime text)
 returns float8[3] as
 $CODE$
     import pg_li3ds
@@ -445,7 +445,7 @@ $CODE$
     return pg_li3ds.transform_point_list(point, transfos, ttime)
 $CODE$ language plpython2u;
 
-create or replace function transform(point float8[3], transfos integer[], ttime text default '')
+create or replace function transform(point float8[3], transfos integer[], ttime text)
 returns float8[3] as
 $CODE$
     import pg_li3ds
@@ -459,7 +459,7 @@ $CODE$
     return pg_li3ds.transform_point_config(point, config, source, target, ttime)
 $CODE$ language plpython2u;
 
-create or replace function transform(point float8[3], config integer, source integer, target integer, ttime text default '')
+create or replace function transform(point float8[3], config integer, source integer, target integer, ttime text)
 returns float8[3] as
 $CODE$
     import pg_li3ds
@@ -480,7 +480,7 @@ $CODE$
     return pg_li3ds.transform_patch_one(patch, transfo, ttime)
 $CODE$ language plpython2u;
 
-create or replace function transform(patch pcpatch, transfo integer, ttime text default '')
+create or replace function transform(patch pcpatch, transfo integer, ttime text)
 returns pcpatch as
 $CODE$
     import pg_li3ds
@@ -494,7 +494,7 @@ $CODE$
     return pg_li3ds.transform_patch_list(patch, transfos, ttime)
 $CODE$ language plpython2u;
 
-create or replace function transform(patch pcpatch, transfos integer[], ttime text default '')
+create or replace function transform(patch pcpatch, transfos integer[], ttime text)
 returns pcpatch as
 $CODE$
     import pg_li3ds
@@ -508,7 +508,7 @@ $CODE$
     return pg_li3ds.transform_patch_config(patch, config, source, target, ttime)
 $CODE$ language plpython2u;
 
-create or replace function transform(patch pcpatch, config integer, source integer, target integer, ttime text default '')
+create or replace function transform(patch pcpatch, config integer, source integer, target integer, ttime text)
 returns pcpatch as
 $CODE$
     import pg_li3ds
