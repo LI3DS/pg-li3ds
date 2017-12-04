@@ -8,13 +8,13 @@
     <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="laser_points_view20170907102906777" source="host=localhost port=5440 sslmode=disable key='point_id' srid=2154 type=PointZM table=&quot;li3ds&quot;.&quot;laser_points_view&quot; (points) sql=" name="points laser (trajectoire n°1)">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="images_aeriennes_fontaine_aux_lions_view20171201130130189" source="host=localhost port=5440 sslmode=disable key='id' srid=2154 type=Point table=&quot;li3ds&quot;.&quot;images_aeriennes_fontaine_aux_lions_view&quot; (point) sql=" name="prises de vue avion &quot;Fontaine aux Lions&quot;">
+    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="images_aeriennes_fontaine_aux_lions_view20171201130130189" source="host=localhost port=5440 sslmode=disable key='id' srid=2154 type=Point table=&quot;li3ds&quot;.&quot;images_aeriennes_fontaine_aux_lions_view&quot; (point) sql=" name="prises de vue avion &quot;Fontaine aux Lions&quot;">
       <customproperties/>
     </layer-tree-layer>
     <layer-tree-layer expanded="0" providerKey="postgres" checked="Qt::Unchecked" id="images_fontaine_aux_lions_view20170906144230859" source="dbname='li3ds' host=localhost port=5440 sslmode=disable key='id' srid=2154 type=LineString table=&quot;li3ds&quot;.&quot;images_fontaine_aux_lions_view&quot; (line) sql=" name="prises de vue véhicule &quot;Fontaine aux Lions&quot;">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="trajectory_tangents_plane_view20171201104707496" source="host=localhost port=5440 sslmode=disable key='id' srid=2154 type=LineString table=&quot;li3ds&quot;.&quot;trajectory_tangents_plane_view&quot; (line) sql=" name="trajectoire avion (tangentes)">
+    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="trajectory_tangents_plane_view20171201104707496" source="host=localhost port=5440 sslmode=disable key='id' srid=2154 type=LineString table=&quot;li3ds&quot;.&quot;trajectory_tangents_plane_view&quot; (line) sql=" name="trajectoire avion (tangentes)">
       <customproperties/>
     </layer-tree-layer>
     <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Unchecked" id="trajectory_tangents_083822_view20170906181621030" source="host=localhost port=5440 sslmode=disable key='id' srid=2154 type=LineString table=&quot;li3ds&quot;.&quot;trajectory_tangents_083822_view&quot; (line) sql=" name="trajectoire n°2 (tangentes)">
@@ -37,10 +37,10 @@
   <mapcanvas>
     <units>meters</units>
     <extent>
-      <xmin>654095.58351446990855038</xmin>
-      <ymin>6863573.32706473581492901</ymin>
-      <xmax>658281.52859618072398007</xmax>
-      <ymax>6868360.33952353708446026</ymax>
+      <xmin>655122.33059087872970849</xmin>
+      <ymin>6865485.60972925834357738</ymin>
+      <xmax>655645.5737260925816372</xmax>
+      <ymax>6866083.98628660850226879</ymax>
     </extent>
     <rotation>0</rotation>
     <projections>1</projections>
@@ -91,9 +91,9 @@
         <legendlayerfile isInOverview="0" layerid="laser_points_view20170907102906777" visible="0"/>
       </filegroup>
     </legendlayer>
-    <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="prises de vue avion &quot;Fontaine aux Lions&quot;" showFeatureCount="0">
+    <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="prises de vue avion &quot;Fontaine aux Lions&quot;" showFeatureCount="0">
       <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="images_aeriennes_fontaine_aux_lions_view20171201130130189" visible="1"/>
+        <legendlayerfile isInOverview="0" layerid="images_aeriennes_fontaine_aux_lions_view20171201130130189" visible="0"/>
       </filegroup>
     </legendlayer>
     <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="prises de vue véhicule &quot;Fontaine aux Lions&quot;" showFeatureCount="0">
@@ -101,9 +101,9 @@
         <legendlayerfile isInOverview="0" layerid="images_fontaine_aux_lions_view20170906144230859" visible="0"/>
       </filegroup>
     </legendlayer>
-    <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="trajectoire avion (tangentes)" showFeatureCount="0">
+    <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="trajectoire avion (tangentes)" showFeatureCount="0">
       <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="trajectory_tangents_plane_view20171201104707496" visible="1"/>
+        <legendlayerfile isInOverview="0" layerid="trajectory_tangents_plane_view20171201104707496" visible="0"/>
       </filegroup>
     </legendlayer>
     <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="trajectoire n°2 (tangentes)" showFeatureCount="0">
@@ -643,6 +643,7 @@
       <SingleCategoryDiagramRenderer diagramType="Histogram" sizeLegend="0" attributeLegend="1">
         <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="inf">
           <fontProperties description="Sans Serif,9,-1,5,50,0,0,0,0,0" style=""/>
+          <attribute field="" color="#000000" label=""/>
         </DiagramCategory>
         <symbol alpha="1" clip_to_extent="1" type="marker" name="sizeSymbol">
           <layer pass="0" class="SimpleMarker" locked="0">
@@ -668,7 +669,7 @@
         </symbol>
       </SingleCategoryDiagramRenderer>
       <DiagramLayerSettings yPosColumn="-1" showColumn="-1" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
-      <annotationform></annotationform>
+      <annotationform>.</annotationform>
       <aliases>
         <alias field="id" index="0" name=""/>
         <alias field="referential" index="1" name=""/>
@@ -695,10 +696,10 @@
           <column width="-1" hidden="1" type="actions"/>
         </columns>
       </attributetableconfig>
-      <editform></editform>
+      <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
-      <editforminitfilepath></editforminitfilepath>
+      <editforminitfilepath>.</editforminitfilepath>
       <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
 """
 QGIS forms can have a Python function that is called when the form is
@@ -1468,10 +1469,10 @@ def my_form_open(dialog, layer, feature):
               <prop k="arrow_width" v="1"/>
               <prop k="arrow_width_unit" v="Pixel"/>
               <prop k="arrow_width_unit_scale" v="0,0,0,0,0,0"/>
-              <prop k="head_length" v="2.1"/>
+              <prop k="head_length" v="3.5"/>
               <prop k="head_length_unit" v="Pixel"/>
               <prop k="head_length_unit_scale" v="0,0,0,0,0,0"/>
-              <prop k="head_thickness" v="2.1"/>
+              <prop k="head_thickness" v="3.5"/>
               <prop k="head_thickness_unit" v="Pixel"/>
               <prop k="head_thickness_unit_scale" v="0,0,0,0,0,0"/>
               <prop k="head_type" v="0"/>
@@ -1787,10 +1788,10 @@ def my_form_open(dialog, layer, feature):
               <prop k="arrow_width" v="1"/>
               <prop k="arrow_width_unit" v="Pixel"/>
               <prop k="arrow_width_unit_scale" v="0,0,0,0,0,0"/>
-              <prop k="head_length" v="2.1"/>
+              <prop k="head_length" v="3.5"/>
               <prop k="head_length_unit" v="Pixel"/>
               <prop k="head_length_unit_scale" v="0,0,0,0,0,0"/>
-              <prop k="head_thickness" v="2.1"/>
+              <prop k="head_thickness" v="3.5"/>
               <prop k="head_thickness_unit" v="Pixel"/>
               <prop k="head_thickness_unit_scale" v="0,0,0,0,0,0"/>
               <prop k="head_type" v="0"/>
@@ -2314,6 +2315,7 @@ def my_form_open(dialog, layer, feature):
       <SingleCategoryDiagramRenderer diagramType="Histogram" sizeLegend="0" attributeLegend="1">
         <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="inf">
           <fontProperties description="Sans Serif,9,-1,5,50,0,0,0,0,0" style=""/>
+          <attribute field="" color="#000000" label=""/>
         </DiagramCategory>
         <symbol alpha="1" clip_to_extent="1" type="marker" name="sizeSymbol">
           <layer pass="0" class="SimpleMarker" locked="0">
@@ -2339,7 +2341,7 @@ def my_form_open(dialog, layer, feature):
         </symbol>
       </SingleCategoryDiagramRenderer>
       <DiagramLayerSettings yPosColumn="-1" showColumn="-1" linePlacementFlags="10" placement="2" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
-      <annotationform></annotationform>
+      <annotationform>.</annotationform>
       <aliases>
         <alias field="id" index="0" name=""/>
         <alias field="t" index="1" name=""/>
@@ -2347,17 +2349,17 @@ def my_form_open(dialog, layer, feature):
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
       <attributeactions default="-1"/>
-      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="-1712746624">
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
         <columns>
           <column width="-1" hidden="0" type="field" name="id"/>
           <column width="-1" hidden="0" type="field" name="t"/>
           <column width="-1" hidden="1" type="actions"/>
         </columns>
       </attributetableconfig>
-      <editform></editform>
+      <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
-      <editforminitfilepath></editforminitfilepath>
+      <editforminitfilepath>.</editforminitfilepath>
       <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
 """
 QGIS forms can have a Python function that is called when the form is
